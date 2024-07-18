@@ -1,7 +1,7 @@
 package leap.droidcord;
 
 public interface HasIcon {
-	public String getIconID();
+	public Long getIconID();
 
 	public String getIconHash();
 

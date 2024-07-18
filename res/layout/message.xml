@@ -1,16 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<leap.droidcord.ui.Message
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:layout_margin="4dp"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    tools:context="leap.droidcord.ui.Message" >
 
     <LinearLayout
+        android:id="@+id/reply"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp" >
 
+        <!-- TODO: Make this an XML vector drawable instead -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -33,6 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="4dp"
+            android:text="Author"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:textColor="#ffffff"
             android:textStyle="bold" />
@@ -41,6 +47,7 @@
             android:id="@+id/reply_content"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Reply"
             android:textAppearance="?android:attr/textAppearanceSmall" />
 
     </LinearLayout>
@@ -73,6 +80,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="4dp"
+                    android:text="Author"
                     android:textAppearance="?android:attr/textAppearance"
                     android:textStyle="bold" />
 
@@ -80,35 +88,45 @@
                     android:id="@+id/msg_timestamp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:text="Today at 12:00 AM"
                     android:textAppearance="?android:attr/textAppearanceSmall" />
+
             </LinearLayout>
 
             <TextView
                 android:id="@+id/msg_content"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:text="Message"
                 android:textAppearance="?android:attr/textAppearance" />
 
-            <ImageView
-                android:id="@+id/attachment_image"
+            <LinearLayout
+                android:id="@+id/msg_attachment"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="top|left"
-                android:scaleType="matrix"
-                android:src="@drawable/ic_launcher" />
+                android:orientation="vertical" >
 
-            <VideoView
-                android:id="@+id/attachment_video"
-                android:layout_width="match_parent"
-                android:layout_height="0dp" />
+                <ImageView
+                    android:id="@+id/msg_attachment_image"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:scaleType="fitCenter"
+                    android:src="@drawable/ic_launcher" />
 
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
-            </FrameLayout>
+                <VideoView
+                    android:id="@+id/msg_attachment_video"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
 
+                <leap.droidcord.ui.Embed
+                    android:id="@+id/msg_embed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" >
+                </leap.droidcord.ui.Embed>
+
+            </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
 
-</LinearLayout>
+</leap.droidcord.ui.Message>

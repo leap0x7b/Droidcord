@@ -77,7 +77,7 @@ public class HTTPThread extends Thread {
 				s.myUserId = resp.getString("id", "");
 				s.isLiteProxy = resp.getBoolean("_liteproxy", false);
 			} catch (Exception e) {
-				// s.error(e.toString());
+				s.error(e.toString());
 				s.myUserId = "";
 			}
 		}
@@ -85,17 +85,15 @@ public class HTTPThread extends Thread {
 		try {
 			switch (action) {
 			case FETCH_GUILDS: {
-				JSONArray guilds = JSON.getArray(s.http
-						.get("/users/@me/guilds"));
+				String guilds_json = s.http.get("/users/@me/guilds");
+				JSONArray guilds = JSON.getArray(guilds_json);
 				s.guilds = new Vector<Guild>();
 
 				for (int i = 0; i < guilds.size(); i++) {
 					s.guilds.addElement(new Guild(s, guilds.getObject(i)));
 				}
-				/*
-				 * s.guildSelector = new GuildSelector(s);
-				 * s.disp.setCurrent(s.guildSelector);
-				 */
+				/*s.guildSelector = new GuildSelector(s);
+				s.disp.setCurrent(s.guildSelector);*/
 				break;
 			}
 
@@ -129,10 +127,8 @@ public class HTTPThread extends Thread {
 								+ "/channels")));
 
 				s.channels = s.selectedGuild.channels;
-				/*
-				 * s.channelSelector = new ChannelSelector(s);
-				 * s.disp.setCurrent(s.channelSelector);
-				 */
+				/*s.channelSelector = new ChannelSelector(s);
+				s.disp.setCurrent(s.channelSelector);*/
 				break;
 			}
 
@@ -149,15 +145,13 @@ public class HTTPThread extends Thread {
 
 					s.directMessages.addElement(new DirectMessage(s, ch));
 				}
-				/*
-				 * s.dmSelector = new DMSelector(s);
-				 * s.disp.setCurrent(s.dmSelector);
-				 */
+				/*s.dmSelector = new DMSelector(s);
+				s.disp.setCurrent(s.dmSelector);*/
 				break;
 			}
 
 			case SEND_MESSAGE: {
-				String id;
+				long id;
 				if (s.isDM)
 					id = s.selectedDm.id;
 				else
@@ -200,7 +194,7 @@ public class HTTPThread extends Thread {
 			}
 
 			case FETCH_MESSAGES: {
-				String id;
+				long id;
 				if (s.isDM)
 					id = s.selectedDm.id;
 				else
@@ -221,74 +215,83 @@ public class HTTPThread extends Thread {
 							.addElement(new Message(s, messages.getObject(i)));
 				}
 
-				/*
-				 * if ((fetchMsgsBefore == null && fetchMsgsAfter == null) ||
-				 * s.sendMessage != null) { // If user opened a new channel or
-				 * sent a message, create a new channel view if (s.oldUI)
-				 * s.oldChannelView = new OldChannelView(s); else s.channelView
-				 * = new ChannelView(s); } else { // If user scrolled a page
-				 * back or forward, keep reusing the same channel view if
-				 * (s.oldUI) s.oldChannelView.update(); else
-				 * s.channelView.update(false, false); }
-				 */
+                /*if ((fetchMsgsBefore == null && fetchMsgsAfter == null) || s.sendMessage != null) {
+                    // If user opened a new channel or sent a message, create a new channel view
+                    if (s.oldUI) s.oldChannelView = new OldChannelView(s);
+                    else s.channelView = new ChannelView(s);
+                } else {
+                    // If user scrolled a page back or forward, keep reusing the same channel view
+                    if (s.oldUI) s.oldChannelView.update();
+                    else s.channelView.update(false, false);
+                }
+
+                // Show the channel view screen (hide the loading screen)
+                if (s.oldUI) {
+                    s.disp.setCurrent(s.oldChannelView);
+                } else {
+                    s.channelView.bannerText = null;
+                    s.disp.setCurrent(s.channelView);
+                    s.channelView.repaint();
+                }*/
 
 				s.sendMessage = null;
-				s.typingUsers = new Vector<User>();
-				s.typingUserIDs = new Vector<Integer>();
+				s.typingUsers = new Vector<String>();
+				s.typingUserIDs = new Vector<Long>();
 				break;
 			}
 
 			case FETCH_ATTACHMENTS: {
-				/*
-				 * if (s.cdn == null || s.cdn.length() == 0) { throw new
-				 * Exception
-				 * ("CDN URL has not been defined. Attachments are not available."
-				 * ); }
-				 * 
-				 * Vector attachments = s.attachmentView.msg.attachments; int
-				 * layout = Item.LAYOUT_NEWLINE_AFTER |
-				 * Item.LAYOUT_NEWLINE_BEFORE;
-				 * 
-				 * for (int i = 0; i < attachments.size(); i++) { Attachment
-				 * attach = (Attachment) attachments.elementAt(i);
-				 * 
-				 * StringItem titleItem = new StringItem(null, attach.name +
-				 * " (" + attach.size + ")");
-				 * s.attachmentView.append(titleItem);
-				 * 
-				 * if (attach.supported) { // Supported attachment (image/video)
-				 * -> show it // For videos, only the first frame is shown
-				 * (Discord media proxy converts to image) try { Image image =
-				 * s.http.getImage(attach.previewUrl); ImageItem item = new
-				 * ImageItem(null, image, Item.LAYOUT_DEFAULT, null);
-				 * item.setLayout(layout); s.attachmentView.append(item); }
-				 * catch (Exception e) { StringItem item = new StringItem(null,
-				 * e.toString()); item.setLayout(layout);
-				 * s.attachmentView.append(item); } } else { if (attach.isText)
-				 * { // Unsupported -> show a button to view it as text // Note:
-				 * showCommand has a priority starting at 100, so when it's
-				 * pressed, // we can distinguish it from 'open in browser'
-				 * buttons Command showCommand = new Command("Show",
-				 * Command.ITEM, i + 100); StringItem showButton = new
-				 * StringItem(null, "Show as text", Item.BUTTON);
-				 * showButton.setLayout(layout);
-				 * showButton.setDefaultCommand(showCommand);
-				 * showButton.setItemCommandListener(s.attachmentView);
-				 * s.attachmentView.append(showButton); } }
-				 * 
-				 * Command openCommand = new Command("Open", Command.ITEM, i);
-				 * StringItem openButton = new StringItem(null,
-				 * "Open in browser", Item.BUTTON);
-				 * openButton.setLayout(layout);
-				 * openButton.setDefaultCommand(openCommand);
-				 * openButton.setItemCommandListener(s.attachmentView);
-				 * s.attachmentView.append(openButton);
-				 * 
-				 * Spacer sp = new Spacer(s.attachmentView.getWidth(),
-				 * s.attachmentView.getHeight()/10);
-				 * s.attachmentView.append(sp); }
-				 */
-				break;
+                /*if (s.cdn == null || s.cdn.length() == 0) {
+                    throw new Exception("CDN URL has not been defined. Attachments are not available.");
+                }
+
+                Vector attachments = s.attachmentView.msg.attachments;
+
+                for (int i = 0; i < attachments.size(); i++) {
+                    Attachment attach = (Attachment) attachments.elementAt(i);
+
+                    StringItem titleItem = new StringItem(null, attach.name + " (" + attach.size + ")");
+                    s.attachmentView.append(titleItem);
+
+                    if (attach.supported) {
+                        // Supported attachment (image/video) -> show it
+                        // For videos, only the first frame is shown (Discord media proxy converts to image)
+                        try {
+                            Image image = s.http.getImage(attach.previewUrl);
+                            ImageItem item = new ImageItem(null, image, Item.LAYOUT_DEFAULT, null);
+                            item.setLayout(layout);
+                            s.attachmentView.append(item);
+                        }
+                        catch (Exception e) {
+                            StringItem item = new StringItem(null, e.toString());
+                            item.setLayout(layout);
+                            s.attachmentView.append(item);
+                        }
+                    } else {
+                        if (attach.isText) {
+                            // Unsupported -> show a button to view it as text
+                            // Note: showCommand has a priority starting at 100, so when it's pressed, 
+                            //       we can distinguish it from 'open in browser' buttons
+                            Command showCommand = new Command("Show", Command.ITEM, i + 100);
+                            StringItem showButton = new StringItem(null, "Show as text", Item.BUTTON);
+                            showButton.setLayout(layout);
+                            showButton.setDefaultCommand(showCommand);
+                            showButton.setItemCommandListener(s.attachmentView);
+                            s.attachmentView.append(showButton);
+                        }
+                    }
+
+                    Command openCommand = new Command("Open", Command.ITEM, i);
+                    StringItem openButton = new StringItem(null, "Open in browser", Item.BUTTON);
+                    openButton.setLayout(layout);
+                    openButton.setDefaultCommand(openCommand);
+                    openButton.setItemCommandListener(s.attachmentView);
+                    s.attachmentView.append(openButton);
+
+                    Spacer sp = new Spacer(s.attachmentView.getWidth(), s.attachmentView.getHeight()/10);
+                    s.attachmentView.append(sp);
+                }*/
+                break;
 			}
 
 			case FETCH_ICON: {
@@ -299,7 +302,7 @@ public class HTTPThread extends Thread {
 
 				String format = (s.useJpeg ? "jpg" : "png");
 				String type = iconTarget.getIconType();
-				String id = iconTarget.getIconID();
+				long id = iconTarget.getIconID();
 				String hash = iconTarget.getIconHash();
 				Bitmap icon = s.http.getImage(s.cdn + type + id + "/" + hash
 						+ "." + format);
@@ -314,7 +317,7 @@ public class HTTPThread extends Thread {
 				OutputStream os = null;
 
 				try {
-					String id = s.isDM ? s.selectedDm.id : s.selectedChannel.id;
+					Long id = s.isDM ? s.selectedDm.id : s.selectedChannel.id;
 					httpConn = s.http.openConnection("/channels/" + id
 							+ "/upload");
 					httpConn.setRequestMethod("POST");
@@ -378,7 +381,7 @@ public class HTTPThread extends Thread {
 				JSONObject newMessage = new JSONObject();
 				newMessage.put("content", editContent);
 
-				String channelId = s.isDM ? s.selectedDm.id
+				Long channelId = s.isDM ? s.selectedDm.id
 						: s.selectedChannel.id;
 				String path = "/channels/" + channelId + "/messages/"
 						+ editMessage.id + "/edit";
@@ -396,7 +399,7 @@ public class HTTPThread extends Thread {
 			}
 
 			case DELETE_MESSAGE: {
-				String channelId = s.isDM ? s.selectedDm.id
+				Long channelId = s.isDM ? s.selectedDm.id
 						: s.selectedChannel.id;
 
 				s.http.get("/channels/" + channelId + "/messages/"

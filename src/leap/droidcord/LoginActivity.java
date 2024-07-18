@@ -1,24 +1,24 @@
 package leap.droidcord;
 
 import android.app.Activity;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
-import android.view.inputmethod.EditorInfo;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
-import java.util.ArrayList;
-import java.util.List;
+import android.widget.Spinner;
+import android.widget.Toast;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -28,9 +28,7 @@ import java.util.concurrent.Executors;
  */
 public class LoginActivity extends Activity {
 
-	/**
-	 * Keep track of the login task to ensure we can cancel it if requested.
-	 */
+	private State s;
 	private UserLoginTask mAuthTask = null;
 
 	// UI references.
@@ -39,20 +37,38 @@ public class LoginActivity extends Activity {
 	private EditText mGatewayUrlView;
 	private CheckBox mUseGatewayView;
 	private EditText mTokenView;
+	private Spinner mSendTokenAsView;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		this.requestWindowFeature(Window.FEATURE_PROGRESS);
 		super.onCreate(savedInstanceState);
+		this.requestWindowFeature(Window.FEATURE_PROGRESS);
 		setContentView(R.layout.activity_login);
-
+		s = new State(this);
+		
 		// Set up the login form.
 		mApiUrlView = (EditText) findViewById(R.id.api_url);
 		mCdnUrlView = (EditText) findViewById(R.id.cdn_url);
 		mUseGatewayView = (CheckBox) findViewById(R.id.use_gateway);
 		mGatewayUrlView = (EditText) findViewById(R.id.gateway_url);
 		mTokenView = (EditText) findViewById(R.id.token);
-
+		mSendTokenAsView = (Spinner) findViewById(R.id.send_token_as);
+		
+		mUseGatewayView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+	        @Override
+	        public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+	        	mGatewayUrlView.setEnabled(isChecked);
+	        }
+		});
+		
+		ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+		    this,
+		    R.array.send_token_as,
+		    android.R.layout.simple_spinner_item
+		);
+		adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		mSendTokenAsView.setAdapter(adapter);
+		
 		Button mLoginButton = (Button) findViewById(R.id.login_button);
 		mLoginButton.setOnClickListener(new OnClickListener() {
 			@Override
@@ -84,6 +100,7 @@ public class LoginActivity extends Activity {
 		Boolean use_gateway = mUseGatewayView.isChecked();
 		String gateway_url = mGatewayUrlView.getText().toString();
 		String token = mTokenView.getText().toString();
+		Integer send_token_as = mSendTokenAsView.getSelectedItemPosition();
 
 		boolean cancel = false;
 		View focusView = null;
@@ -120,8 +137,8 @@ public class LoginActivity extends Activity {
 			// Show a progress spinner, and kick off a background task to
 			// perform the user login attempt.
 			showProgress(true);
-			mAuthTask = new UserLoginTask(api_url, cdn_url, use_gateway,
-					gateway_url, token);
+			mAuthTask = new UserLoginTask(this, api_url, cdn_url, use_gateway,
+					gateway_url, token, send_token_as);
 			mAuthTask.call();
 		}
 	}
@@ -140,20 +157,25 @@ public class LoginActivity extends Activity {
 	 */
 	public class UserLoginTask implements Callable<Void> {
 
+		private final Context mContext;
 		private final String mApiUrl;
 		private final String mCdnUrl;
 		private final Boolean mUseGateway;
 		private final String mGatewayUrl;
 		private final String mToken;
+		private final Integer mSendTokenAs;
 		private Boolean success = false;
+		private String error = "";
 
-		UserLoginTask(String api_url, String cdn_url, Boolean use_gateway,
-				String gateway_url, String token) {
+		UserLoginTask(Context context, String api_url, String cdn_url, Boolean use_gateway,
+				String gateway_url, String token, Integer send_token_as) {
+			mContext = context;
 			mApiUrl = api_url;
 			mCdnUrl = cdn_url;
 			mUseGateway = use_gateway;
 			mGatewayUrl = gateway_url;
 			mToken = token;
+			mSendTokenAs = send_token_as;
 		}
 
 		@Override
@@ -164,14 +186,26 @@ public class LoginActivity extends Activity {
 			executor.execute(new Runnable() {
 				@Override
 				public void run() {
-					// TODO: attempt authentication against a network service.
-
 					try {
-						// Simulate network access.
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
+						s.useGateway = mUseGateway;
+						s.tokenType = mSendTokenAs;
+						s.login(mApiUrl, mGatewayUrl, mCdnUrl, mToken);
+						success = true;
+					} catch (Exception e) {
 						success = false;
+						error = e.toString();
 					}
+					
+					SharedPreferences sp = PreferenceManager
+							.getDefaultSharedPreferences(mContext);
+					SharedPreferences.Editor editor = sp.edit();
+					editor.putString("api", mApiUrl);
+					editor.putString("cdn", mCdnUrl);
+					editor.putBoolean("useGateway", mUseGateway);
+					editor.putString("gateway", mGatewayUrl);
+					editor.putString("token", mToken);
+					editor.putInt("tokenType", mSendTokenAs);
+					editor.commit();
 
 					handler.post(new Runnable() {
 						@Override
@@ -180,11 +214,12 @@ public class LoginActivity extends Activity {
 							showProgress(false);
 
 							if (success) {
+								Intent intent = new Intent(mContext, MainActivity.class);
+								startActivity(intent);
 								finish();
 							} else {
-								mTokenView
-										.setError(getString(R.string.error_incorrect_password));
-								mTokenView.requestFocus();
+								Toast toast = Toast.makeText(mContext, error, Toast.LENGTH_LONG);
+								toast.show();
 							}
 						}
 					});

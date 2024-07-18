@@ -17,7 +17,7 @@ public class Message {
 	static final int TYPE_BOOSTED_LEVEL_2 = 10;
 	static final int TYPE_BOOSTED_LEVEL_3 = 11;
 
-	public String id;
+	public long id;
 	public User author;
 	public String timestamp;
 	public String content;
@@ -38,7 +38,7 @@ public class Message {
 								// updated before next draw
 
 	public Message(State s, JSONObject data) {
-		id = data.getString("id");
+		id = Long.parseLong(data.getString("id"));
 		author = new User(s, data.getObject("author"));
 
 		int t = data.getInt("type", 0);
@@ -158,8 +158,7 @@ public class Message {
 			}
 		}
 
-		Date messageDate = new Date((Long.parseLong(id) >> 22)
-				+ State.DISCORD_EPOCH);
+		Date messageDate = new Date((id >> 22) + State.DISCORD_EPOCH);
 		String messageDay = messageDate.toString().substring(0, 10);
 		String currentDay = new Date().toString().substring(0, 10);
 
@@ -226,7 +225,7 @@ public class Message {
 	 */
 	public boolean shouldShowAuthor(Message above, String clusterStart) {
 		// Different authors -> true
-		if (!above.author.id.equals(author.id))
+		if (!(above.author.id == author.id))
 			return true;
 
 		// This message or above message is a status message -> true
@@ -239,7 +238,7 @@ public class Message {
 
 		// Message was sent more than 7 minutes after the first message of the
 		// cluster -> true
-		long thisMsgTime = Long.parseLong(id) >> 22;
+		long thisMsgTime = id >> 22;
 		long firstMsgTime = Long.parseLong(clusterStart) >> 22;
 		if (thisMsgTime - firstMsgTime > 7 * 60 * 1000)
 			return true;
@@ -249,7 +248,7 @@ public class Message {
 			return false;
 
 		// Different recipients -> true
-		return !above.recipient.id.equals(recipient.id);
+		return !(above.recipient.id == recipient.id);
 	}
 
 	public void delete() {

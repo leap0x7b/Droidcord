@@ -4,23 +4,23 @@ import cc.nnproject.json.*;
 
 public class DirectMessage implements HasIcon {
 	boolean isGroup;
-	public String id;
+	public long id;
 	public String name;
 	public String username;
 	public long lastMessageID;
-	public String iconID; // for groups, group ID. for users, recipient ID (not
-							// DM channel ID)
+	public long iconID; // for groups, group ID. for users, recipient ID (not
+						// DM channel ID)
 	public String iconHash;
 
 	public DirectMessage(State s, JSONObject data) {
-		id = data.getString("id");
+		id = Long.parseLong(data.getString("id"));
 		isGroup = data.getInt("type") == 3;
 
 		String msgIdStr = data.getString("last_message_id");
 		if (msgIdStr != null) {
 			lastMessageID = Long.parseLong(msgIdStr);
 		} else {
-			lastMessageID = Long.parseLong(id);
+			lastMessageID = id;
 		}
 
 		if (isGroup) {
@@ -38,7 +38,7 @@ public class DirectMessage implements HasIcon {
 					username = recipient.getString("username", null);
 				}
 
-				iconID = recipient.getString("id");
+				iconID = Long.parseLong(recipient.getString("id"));
 				iconHash = recipient.getString("avatar");
 			} catch (Exception e) {
 			}
@@ -63,7 +63,7 @@ public class DirectMessage implements HasIcon {
 		return name;
 	}
 
-	public String getIconID() {
+	public Long getIconID() {
 		return iconID;
 	}
 

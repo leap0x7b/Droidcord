@@ -11,11 +11,11 @@ TODO: Make it build on Gradle and Android Studio.
 
 ## Status
 ### Working
-* None for now. Some code from Discord J2ME have been ported though.
+* Logging in
+* Server list
 
 ### Not implemented
-* Logging in
-* Server and channel lists
+* Channel lists
 * Message reading, sending, editing, deleting
 * Replying to messages
 * Reading older messages

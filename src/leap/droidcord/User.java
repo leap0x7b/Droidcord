@@ -3,7 +3,7 @@ package leap.droidcord;
 import cc.nnproject.json.JSONObject;
 
 public class User implements HasIcon {
-	String id;
+	long id;
 	String name;
 	String iconHash;
 
@@ -12,7 +12,7 @@ public class User implements HasIcon {
 	String initials;
 
 	public User(State s, JSONObject data) {
-		id = data.getString("id");
+		id = data.getLong("id");
 
 		name = data.getString("global_name", null);
 		if (name == null) {
@@ -41,10 +41,10 @@ public class User implements HasIcon {
 		}
 		initials = initialsBuf.toString();
 
-		iconColor = Util.hsvToRgb((int) Long.parseLong(id) % 360, 192, 224);
+		iconColor = Util.hsvToRgb((int) id % 360, 192, 224);
 	}
 
-	public String getIconID() {
+	public Long getIconID() {
 		return id;
 	}
 

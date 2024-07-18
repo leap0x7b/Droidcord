@@ -1,7 +1,6 @@
 package leap.droidcord;
 
 import cc.nnproject.json.*;
-import android.app.*;
 import android.content.res.Resources;
 
 public class Attachment {

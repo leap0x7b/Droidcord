@@ -35,7 +35,8 @@ public class IconCache {
 		if (!activeRequests.contains(hash)) {
 			activeRequests.addElement(hash);
 			HTTPThread http = new HTTPThread(s, HTTPThread.FETCH_ICON);
-			http.iconTarget = target; http.start();
+			http.iconTarget = target;
+			http.start();
 		}
 		return null;
 	}

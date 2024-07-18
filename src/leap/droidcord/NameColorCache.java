@@ -23,7 +23,7 @@ public class NameColorCache {
 
 		for (int i = 0; i < s.messages.size(); i++) {
 			Message msg = (Message) s.messages.elementAt(i);
-			String userId = msg.author.id;
+			long userId = msg.author.id;
 			if (requestIds.indexOf(userId) == -1
 					&& !s.nameColorCache.has(msg.author)) {
 				requestIds.add(userId);
@@ -35,10 +35,10 @@ public class NameColorCache {
 		JSONObject msg = new JSONObject();
 		msg.put("op", 8);
 		msg.put("d", reqData);
-		// s.gateway.send(msg);
+		s.gateway.send(msg);
 	}
 
-	public int get(String userId) {
+	public int get(long userId) {
 		if (!s.useNameColors)
 			return 0;
 
@@ -46,7 +46,7 @@ public class NameColorCache {
 		if (s.isDM || s.selectedGuild == null)
 			return 0;
 
-		String key = userId + s.selectedGuild.id;
+		String key = String.valueOf(userId) + String.valueOf(s.selectedGuild.id);
 
 		Integer result = (Integer) colors.get(key);
 		if (result != null)
@@ -83,7 +83,7 @@ public class NameColorCache {
 	public boolean has(User user) {
 		if (s.isDM || s.selectedGuild == null)
 			return false;
-		String key = user.id + s.selectedGuild.id;
+		String key = String.valueOf(user.id) + String.valueOf(s.selectedGuild.id);
 		return colors.containsKey(key);
 	}
 }

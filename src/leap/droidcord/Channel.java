@@ -4,13 +4,13 @@ import java.util.Vector;
 import cc.nnproject.json.*;
 
 public class Channel {
-	public String id;
+	public long id;
 	public String name;
 	public long lastMessageID;
 	public Boolean unread;
 
 	public Channel(JSONObject data) {
-		id = data.getString("id");
+		id = Long.parseLong(data.getString("id"));
 		name = data.getString("name");
 
 		try {
@@ -20,7 +20,7 @@ public class Channel {
 		}
 	}
 
-	public String toString(State s) {
+	public String toString() {
 		return "#" + name;
 	}
 

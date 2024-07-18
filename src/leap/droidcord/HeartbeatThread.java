@@ -21,6 +21,7 @@ public class HeartbeatThread extends Thread {
 		this.lastReceived = -1;
 	}
 
+	@SuppressWarnings("deprecation")
 	public void run() {
 		try {
 			while (true) {

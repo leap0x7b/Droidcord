@@ -77,12 +77,12 @@ public class UnreadManager {
 			save();
 	}
 
-	public boolean hasUnreads(String channelID, long lastMessageID) {
+	public boolean hasUnreads(long channelID, long lastMessageID) {
 		long lastMessageTime = lastMessageID >> 22;
 
 		String lastReadTime = (String) channels.get(channelID);
 		if (lastReadTime == null) {
-			put(channelID, String.valueOf(lastMessageTime));
+			put(String.valueOf(channelID), String.valueOf(lastMessageTime));
 			return false;
 		}
 
@@ -97,13 +97,13 @@ public class UnreadManager {
 		return hasUnreads(dm.id, dm.lastMessageID);
 	}
 
-	public void markRead(String channelID, long lastMessageID) {
+	public void markRead(Long channelID, long lastMessageID) {
 		long lastMessageTime = lastMessageID >> 22;
 		String lastReadTime = (String) channels.get(channelID);
 
 		if (lastReadTime == null
 				|| Long.parseLong(lastReadTime) < lastMessageTime) {
-			put(channelID, String.valueOf(lastMessageTime));
+			put(String.valueOf(channelID), String.valueOf(lastMessageTime));
 		}
 	}
 
@@ -129,13 +129,14 @@ public class UnreadManager {
 	}
 
 	public void markDMsRead() {
-		/*
-		 * if (s.dmSelector == null) return;
-		 * 
-		 * autoSave = false; for (int i = 0; i < s.dmSelector.lastDMs.size();
-		 * i++) { DirectMessage dmCh = (DirectMessage)
-		 * s.dmSelector.lastDMs.elementAt(i); markRead(dmCh); } autoSave = true;
-		 * save();
-		 */
+        /*if (s.dmSelector == null) return;
+
+        autoSave = false;
+        for (int i = 0; i < s.dmSelector.lastDMs.size(); i++) {
+            DMChannel dmCh = (DMChannel) s.dmSelector.lastDMs.elementAt(i);
+            markRead(dmCh);
+        }
+        autoSave = true;
+        save();*/
 	}
 }

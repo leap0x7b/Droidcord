@@ -32,7 +32,8 @@ public class HTTPThing {
 
 		HttpURLConnection c = (HttpURLConnection) new URL(fullUrl)
 				.openConnection();
-
+		c.setDoOutput(true);
+		
 		if (s.tokenType == State.TOKEN_TYPE_HEADER) {
 			c.addRequestProperty("Content-Type", "application/json");
 			c.addRequestProperty("Authorization", token);
