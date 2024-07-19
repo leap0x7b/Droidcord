@@ -66,9 +66,9 @@ public class MainActivity extends TabActivity {
 			int token_type = sp.getInt("tokenType", 0);
 
 			try {
-				s.useGateway = true;
+				s.useGateway = use_gateway;
 				s.tokenType = token_type;
-				s.login(api_url, "socket://146.59.80.3:8081", cdn_url, token);
+				s.login(api_url, gateway_url, cdn_url, token);
 				// FIXME: for some reason making this a thread doesn't fetch the guild list and would just error out with a null pointer exception
 				//new HTTPThread(s, HTTPThread.FETCH_GUILDS).start();
 				

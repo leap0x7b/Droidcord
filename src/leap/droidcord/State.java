@@ -5,7 +5,6 @@ import java.util.*;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
-import android.widget.Toast;
 
 public class State {
 	static final int ICON_TYPE_NONE = 0;
