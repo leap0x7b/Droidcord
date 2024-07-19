@@ -10,7 +10,7 @@ import cc.nnproject.json.*;
 public class HTTPThread extends Thread {
 	static final int FETCH_GUILDS = 0;
 	static final int FETCH_CHANNELS = 1;
-	static final int FETCH_DM_CHANNELS = 2;
+	static final int FETCH_DIRECT_MESSAGES = 2;
 	static final int FETCH_MESSAGES = 3;
 	static final int SEND_MESSAGE = 4;
 	static final int FETCH_ATTACHMENTS = 5;
@@ -71,14 +71,14 @@ public class HTTPThread extends Thread {
 	}
 
 	public void run() {
-		if (s.myUserId == null) {
+		if (s.myUserId == 0) {
 			try {
 				JSONObject resp = JSON.getObject(s.http.get("/users/@me"));
-				s.myUserId = resp.getString("id", "");
+				s.myUserId = Long.parseLong(resp.getString("id", ""));
 				s.isLiteProxy = resp.getBoolean("_liteproxy", false);
 			} catch (Exception e) {
 				s.error(e.toString());
-				s.myUserId = "";
+				s.myUserId = 0;
 			}
 		}
 
@@ -122,7 +122,7 @@ public class HTTPThread extends Thread {
 					}
 				}
 
-				s.selectedGuild.channels = Channel.parseChannels(JSON
+				s.selectedGuild.channels = Channel.parseChannels(s, s.selectedGuild, JSON
 						.getArray(s.http.get("/guilds/" + s.selectedGuild.id
 								+ "/channels")));
 
@@ -132,7 +132,7 @@ public class HTTPThread extends Thread {
 				break;
 			}
 
-			case FETCH_DM_CHANNELS: {
+			case FETCH_DIRECT_MESSAGES: {
 				JSONArray channels = JSON.getArray(s.http
 						.get("/users/@me/channels"));
 				s.directMessages = new Vector<DirectMessage>();
@@ -151,11 +151,7 @@ public class HTTPThread extends Thread {
 			}
 
 			case SEND_MESSAGE: {
-				long id;
-				if (s.isDM)
-					id = s.selectedDm.id;
-				else
-					id = s.selectedChannel.id;
+				Snowflake channel = s.isDM ? s.selectedDm : s.selectedChannel;
 
 				JSONObject json = new JSONObject();
 				json.put("content", s.sendMessage);
@@ -166,8 +162,7 @@ public class HTTPThread extends Thread {
 				// Reply
 				if (s.sendReference != null) {
 					JSONObject ref = new JSONObject();
-					ref.put("channel_id", s.isDM ? s.selectedDm.id
-							: s.selectedChannel.id);
+					ref.put("channel_id", channel.id);
 					if (!s.isDM)
 						ref.put("guild_id", s.selectedGuild.id);
 					ref.put("message_id", s.sendReference);
@@ -180,7 +175,7 @@ public class HTTPThread extends Thread {
 					}
 				}
 
-				s.http.post("/channels/" + id + "/messages", json);
+				s.http.post("/channels/" + channel.id + "/messages", json);
 
 				// If gateway enabled, don't need to fetch new messages
 				if (s.gatewayActive()) {
@@ -194,13 +189,9 @@ public class HTTPThread extends Thread {
 			}
 
 			case FETCH_MESSAGES: {
-				long id;
-				if (s.isDM)
-					id = s.selectedDm.id;
-				else
-					id = s.selectedChannel.id;
+				Snowflake channel = s.isDM ? s.selectedDm : s.selectedChannel;
 
-				StringBuffer url = new StringBuffer("/channels/" + id
+				StringBuffer url = new StringBuffer("/channels/" + channel.id
 						+ "/messages?limit=" + s.messageLoadCount);
 				if (fetchMsgsBefore != null)
 					url.append("&before=" + fetchMsgsBefore);
@@ -317,8 +308,8 @@ public class HTTPThread extends Thread {
 				OutputStream os = null;
 
 				try {
-					Long id = s.isDM ? s.selectedDm.id : s.selectedChannel.id;
-					httpConn = s.http.openConnection("/channels/" + id
+					Snowflake channel = s.isDM ? s.selectedDm : s.selectedChannel;
+					httpConn = s.http.openConnection("/channels/" + channel.id
 							+ "/upload");
 					httpConn.setRequestMethod("POST");
 					httpConn.setRequestProperty("Content-Type",
@@ -364,14 +355,14 @@ public class HTTPThread extends Thread {
 			}
 
 			case VIEW_ATTACHMENT_TEXT: {
-				String text;
+				/*String text;
 				byte[] textBytes = s.http.getBytes(viewAttach.url);
 				try {
 					text = new String(textBytes, "UTF-8");
 				} catch (UnsupportedEncodingException e) {
 					text = new String(textBytes);
 				}
-                /*MessageCopyBox copyBox = new MessageCopyBox(s, viewAttach.name, text);
+                MessageCopyBox copyBox = new MessageCopyBox(s, viewAttach.name, text);
                 copyBox.lastScreen = s.attachmentView;
                 s.disp.setCurrent(copyBox);*/
 				break;
@@ -381,9 +372,9 @@ public class HTTPThread extends Thread {
 				JSONObject newMessage = new JSONObject();
 				newMessage.put("content", editContent);
 
-				Long channelId = s.isDM ? s.selectedDm.id
-						: s.selectedChannel.id;
-				String path = "/channels/" + channelId + "/messages/"
+				Snowflake channel = s.isDM ? s.selectedDm
+						: s.selectedChannel;
+				String path = "/channels/" + channel.id + "/messages/"
 						+ editMessage.id + "/edit";
 				s.http.post(path, newMessage);
 
@@ -399,10 +390,10 @@ public class HTTPThread extends Thread {
 			}
 
 			case DELETE_MESSAGE: {
-				Long channelId = s.isDM ? s.selectedDm.id
-						: s.selectedChannel.id;
+				Snowflake channel = s.isDM ? s.selectedDm
+						: s.selectedChannel;
 
-				s.http.get("/channels/" + channelId + "/messages/"
+				s.http.get("/channels/" + channel.id + "/messages/"
 						+ editMessage.id + "/delete");
 
 				// Manually update message to be deleted if gateway disabled
@@ -417,7 +408,8 @@ public class HTTPThread extends Thread {
 			if (action == FETCH_ICON) {
 				s.iconCache.removeRequest(iconTarget.getIconHash());
 			} else {
-				s.error(e.toString());
+				//s.error(e.toString());
+				e.printStackTrace();
 			}
 		}
 	}

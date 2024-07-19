@@ -10,7 +10,7 @@
     tools:context="leap.droidcord.ui.Message" >
 
     <LinearLayout
-        android:id="@+id/reply"
+        android:id="@+id/msg_reply"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp" >

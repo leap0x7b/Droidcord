@@ -139,24 +139,24 @@ public class GatewayThread extends Thread {
                     }
                     else if (op.equals("MESSAGE_CREATE")) {
                         JSONObject msgData = message.getObject("d");
-                        String msgId = msgData.getString("id");
-                        String chId = msgData.getString("channel_id");
+                        long msgId = Long.parseLong(msgData.getString("id"));
+                        long chId = Long.parseLong(msgData.getString("channel_id"));
 
                         // Mark this channel as unread if it's not the currently opened channel
                         if (
                             !s.channelIsOpen
-                            || (s.isDM && !chId.equals(s.selectedDm.id))
-                            || (!s.isDM && !chId.equals(s.selectedChannel.id))
+                            || (s.isDM && !(chId == s.selectedDm.id))
+                            || (!s.isDM && !(chId == s.selectedChannel.id))
                         ) {
                             Channel ch = Channel.getByID(s, chId);
                             if (ch != null) {
-                                ch.lastMessageID = Long.parseLong(msgId);
+                                ch.lastMessageID = msgId;
                                 s.updateUnreadIndicators(false, chId);
                                 continue;
                             }
                             DirectMessage dm = DirectMessage.getById(s, chId);
                             if (dm != null) {
-                                dm.lastMessageID = Long.parseLong(msgId);
+                                dm.lastMessageID = msgId;
                                 s.updateUnreadIndicators(true, chId);
                             }
                             continue;

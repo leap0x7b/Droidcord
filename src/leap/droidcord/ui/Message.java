@@ -1,5 +1,6 @@
 package leap.droidcord.ui;
 
+import leap.droidcord.*;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.View;
@@ -39,9 +40,15 @@ public class Message extends LinearLayout implements OnClickListener {
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        /*mMsgListItem = findViewById(R.id.msg_list_item);
-        mBodyTextView = (TextView) findViewById(R.id.text_view);
-        mRightStatusIndicator = (ImageView) findViewById(R.id.right_status_indicator);*/
+        ImageView mAvatar = (ImageView) findViewById(R.id.msg_avatar);
+        TextView mAuthor = (TextView) findViewById(R.id.msg_author);
+        TextView mTimestamp = (TextView) findViewById(R.id.msg_timestamp);
+        TextView mContent = (TextView) findViewById(R.id.msg_content);
+
+        View mReply = findViewById(R.id.msg_reply);
+        ImageView mReplyAvatar = (ImageView) findViewById(R.id.reply_avatar);
+        TextView mReplyAuthor = (TextView) findViewById(R.id.reply_author);
+        TextView mReplyContent = (TextView) findViewById(R.id.reply_content);
     }
 	
 	@Override

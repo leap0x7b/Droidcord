@@ -218,8 +218,7 @@ public class LoginActivity extends Activity {
 								startActivity(intent);
 								finish();
 							} else {
-								Toast toast = Toast.makeText(mContext, error, Toast.LENGTH_LONG);
-								toast.show();
+								s.error(error);
 							}
 						}
 					});

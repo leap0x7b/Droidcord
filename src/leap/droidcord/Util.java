@@ -1,5 +1,7 @@
 package leap.droidcord;
 
+import android.text.TextUtils;
+
 public class Util {
 	public static int[] resizeFit(int imgW, int imgH, int maxW, int maxH) {
 		int imgAspect = imgW * 100 / imgH;

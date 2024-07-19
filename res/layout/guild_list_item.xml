@@ -11,16 +11,17 @@
 
     <ImageView
         android:id="@+id/guild_item_icon"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginRight="8dp"
         android:src="@drawable/ic_launcher" />
 
     <TextView
         android:id="@+id/guild_item_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:ellipsize="marquee"
+        android:singleLine="true"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
 </LinearLayout>

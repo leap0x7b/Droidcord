@@ -2,9 +2,8 @@ package leap.droidcord;
 
 import cc.nnproject.json.*;
 
-public class DirectMessage implements HasIcon {
+public class DirectMessage extends Snowflake implements HasIcon {
 	boolean isGroup;
-	public long id;
 	public String name;
 	public String username;
 	public long lastMessageID;
@@ -13,7 +12,7 @@ public class DirectMessage implements HasIcon {
 	public String iconHash;
 
 	public DirectMessage(State s, JSONObject data) {
-		id = Long.parseLong(data.getString("id"));
+		super(Long.parseLong(data.getString("id")));
 		isGroup = data.getInt("type") == 3;
 
 		String msgIdStr = data.getString("last_message_id");
@@ -47,13 +46,13 @@ public class DirectMessage implements HasIcon {
 			name = "(unknown)";
 	}
 
-	static DirectMessage getById(State s, String id) {
+	static DirectMessage getById(State s, long id) {
 		if (s.directMessages == null)
 			return null;
 
 		for (int c = 0; c < s.directMessages.size(); c++) {
 			DirectMessage ch = (DirectMessage) s.directMessages.elementAt(c);
-			if (id.equals(ch.id))
+			if (id == ch.id)
 				return ch;
 		}
 		return null;

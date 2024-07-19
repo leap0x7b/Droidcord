@@ -1,18 +1,25 @@
 package leap.droidcord;
 
 import cc.nnproject.json.*;
+
 import java.util.*;
 
-public class Guild implements HasIcon {
-	public long id;
+public class Guild extends Snowflake implements HasIcon {
 	public String name;
+	public long ownerId;
+	public User me;
+	public long myPermissions;
 	public Vector<Channel> channels;
-	public String iconHash;
 	public Vector<Role> roles;
+	public String iconHash;
 
 	public Guild(State s, JSONObject data) {
-		id = Long.parseLong(data.getString("id"));
+		super(Long.parseLong(data.getString("id")));
 		iconHash = data.getString("icon", null);
+
+		if (data.has("owner_id")) {
+			ownerId = Long.parseLong(data.getString("owner_id"));
+		}
 
 		if (data.has("name")) {
 			name = data.getString("name");
@@ -23,9 +30,44 @@ public class Guild implements HasIcon {
 		}
 
 		if (data.has("channels")) {
-			channels = Channel.parseChannels(data.getArray("channels"));
+			channels = Channel.parseChannels(s, this, data.getArray("channels"));
+		}
+		
+		if (data.has("permissions")) {
+			myPermissions = Long.parseLong(data.getString("permissions"));
+		}
+		
+		if (data.has("roles")) {
+			roles = Role.parseRoles(data.getArray("roles"));
 		}
 	}
+
+    public Role everyoneRole() {
+        for (Role role : roles) {
+            if (role.id == this.id) {
+                return role;
+            }
+        }
+        return null;
+    }
+	
+    public long computeBasePermissions(GuildMember member) {
+        if (member.user.id == ownerId) {
+            return Permissions.ALL;
+        }
+
+        long perms = everyoneRole().permissions;
+
+        for (Role role : member.roles) {
+            perms |= role.permissions;
+        }
+
+        if ((perms & Permissions.ADMINISTRATOR) != 0) {
+            return Permissions.ALL;
+        }
+
+        return perms;
+    }
 
 	public String toString(State s) {
 		return name;

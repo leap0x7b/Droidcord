@@ -3,7 +3,7 @@ package leap.droidcord;
 import cc.nnproject.json.*;
 import java.util.*;
 
-public class Message {
+public class Message extends Snowflake {
 	static final int TYPE_ADDED = 1; // user added another user to group DM
 	static final int TYPE_REMOVED = 2; // user left (or was removed) from group
 										// DM
@@ -17,7 +17,6 @@ public class Message {
 	static final int TYPE_BOOSTED_LEVEL_2 = 10;
 	static final int TYPE_BOOSTED_LEVEL_3 = 11;
 
-	public long id;
 	public User author;
 	public String timestamp;
 	public String content;
@@ -38,6 +37,7 @@ public class Message {
 								// updated before next draw
 
 	public Message(State s, JSONObject data) {
+		super(Long.parseLong(data.getString("id")));
 		id = Long.parseLong(data.getString("id"));
 		author = new User(s, data.getObject("author"));
 
@@ -104,7 +104,7 @@ public class Message {
 			// (and parse extra fields which don't apply to status messages)
 			content = data.getString("content", "");
 
-			if (s.myUserId.equals(author.id))
+			if (s.myUserId == author.id)
 				rawContent = data.getString("_rc", content);
 
 			try {
@@ -158,7 +158,7 @@ public class Message {
 			}
 		}
 
-		Date messageDate = new Date((id >> 22) + State.DISCORD_EPOCH);
+		Date messageDate = new Date((id >> 22) + Snowflake.EPOCH);
 		String messageDay = messageDate.toString().substring(0, 10);
 		String currentDay = new Date().toString().substring(0, 10);
 

@@ -5,10 +5,9 @@ import java.util.*;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.Toast;
 
 public class State {
-	public static final long DISCORD_EPOCH = 1420070400000L;
-
 	static final int ICON_TYPE_NONE = 0;
 	static final int ICON_TYPE_SQUARE = 1;
 	static final int ICON_TYPE_CIRCLE = 2;
@@ -36,7 +35,7 @@ public class State {
 	GatewayThread gateway;
 	String cdn;
 
-	String myUserId;
+	long myUserId;
 	boolean isLiteProxy;
 
 	IconCache iconCache;
@@ -89,7 +88,6 @@ public class State {
 		}
 	}
 
-
 	/*private Alert createError(String message) {
 		Alert error = new Alert("Error");
 		error.setTimeout(Alert.FOREVER);
@@ -98,8 +96,8 @@ public class State {
 	}*/
 
 	public void error(String message) {
-		/*disp.setCurrent(createError(message));
-		if (channelView != null) channelView.bannerText = null;*/
+		/*Toast toast = Toast.makeText(c, "Error: " + message, Toast.LENGTH_LONG);
+		toast.show();*/
 		System.out.println(message);
 	}
 
@@ -107,7 +105,7 @@ public class State {
 		return gateway != null && gateway.isAlive();
 	}
 
-	public void updateUnreadIndicators(boolean isDM, String chId) {
+	public void updateUnreadIndicators(boolean isDM, long chId) {
 		/*if (isDM) {
 			if (dmSelector != null) dmSelector.update(chId);
 		} else {
