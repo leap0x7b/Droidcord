@@ -160,7 +160,7 @@ public class HTTPThread extends Thread {
 				json.put("tts", false);
 
 				// Reply
-				if (s.sendReference != null) {
+				if (s.sendReference != 0) {
 					JSONObject ref = new JSONObject();
 					ref.put("channel_id", channel.id);
 					if (!s.isDM)

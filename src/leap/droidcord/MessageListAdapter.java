@@ -9,8 +9,12 @@ import java.util.concurrent.Executors;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -82,21 +86,42 @@ public class MessageListAdapter extends BaseAdapter {
 		LoadImage loadImage = new LoadImage(avatar);
 		loadImage.call();
 
+		View msg = (View) convertView.findViewById(R.id.message);
 		TextView author = (TextView) convertView.findViewById(R.id.msg_author);
 		TextView timestamp = (TextView) convertView
 				.findViewById(R.id.msg_timestamp);
 		TextView content = (TextView) convertView
 				.findViewById(R.id.msg_content);
-
+		
+		author.setText(message.author.name);
+		timestamp.setText(message.timestamp);
+		content.setText(message.content);
 		/*if (!message.showAuthor) {
 			View metadata = convertView.findViewById(R.id.msg_metadata);
 			metadata.setVisibility(View.GONE);
 			avatar.getLayoutParams().height = 0;
 		}*/
+		
+		View reply = (View) convertView.findViewById(R.id.msg_reply);
+		TextView replyAuthor = (TextView) convertView.findViewById(R.id.reply_author);
+		TextView replyContent = (TextView) convertView
+				.findViewById(R.id.reply_content);
 
-		author.setText(message.author.name);
-		timestamp.setText(message.timestamp);
-		content.setText(message.content);
+		View status = (View) convertView.findViewById(R.id.status);
+		TextView statusText = (TextView) convertView
+				.findViewById(R.id.status_text);
+		TextView statusTimestamp = (TextView) convertView
+				.findViewById(R.id.status_timestamp);
+		
+		if (message.isStatus) {
+			msg.setVisibility(View.GONE);
+			status.setVisibility(View.VISIBLE);
+
+			SpannableStringBuilder sb = new SpannableStringBuilder(message.author.name + " " + message.content);
+			sb.setSpan(new StyleSpan(Typeface.BOLD), 0, message.author.name.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+			statusText.setText(sb);
+			statusTimestamp.setText(message.timestamp);
+		} 
 
 		return convertView;
 	}

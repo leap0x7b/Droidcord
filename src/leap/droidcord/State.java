@@ -62,7 +62,7 @@ public class State {
 
 	// Parameters for message/reply sending
 	String sendMessage;
-	String sendReference; // ID of the message the user is replying to
+	long sendReference; // ID of the message the user is replying to
 	boolean sendPing;
 
 	boolean isDM;

@@ -2,7 +2,6 @@ package leap.droidcord;
 
 import cc.nnproject.json.*;
 
-import java.io.Serializable;
 import java.util.*;
 
 public class Guild extends Snowflake implements HasIcon {

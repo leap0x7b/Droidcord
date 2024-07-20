@@ -10,16 +10,22 @@ import android.database.DataSetObserver;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
 public class ChatActivity extends Activity {
-	
+
 	private State s;
 	private Context context;
+	private EditText mMsgComposer;
+	private Button mMsgSend;
 	int page;
 	long before;
 	long after;
@@ -31,10 +37,16 @@ public class ChatActivity extends Activity {
 		setContentView(R.layout.activity_chat);
 
 		s = MainActivity.s;
-		s.messagesView = (ListView) findViewById(R.id.messages);
 		context = this;
 		s.channelIsOpen = true;
 		setTitle(s.selectedChannel.toString());
+
+		s.messagesView = (ListView) findViewById(R.id.messages);
+		mMsgComposer = (EditText) findViewById(R.id.msg_composer);
+		mMsgSend = (Button) findViewById(R.id.msg_send);
+
+		mMsgComposer.setHint(getResources().getString(
+				R.string.msg_composer_hint, s.selectedChannel.toString()));
 
 		ExecutorService executor = Executors.newSingleThreadExecutor();
 		final Handler handler = new Handler(Looper.getMainLooper());
@@ -44,7 +56,8 @@ public class ChatActivity extends Activity {
 			@Override
 			public void run() {
 				new HTTPThread(s, HTTPThread.FETCH_MESSAGES).run();
-				s.messagesAdapter = new MessageListAdapter(context, s, s.messages);
+				s.messagesAdapter = new MessageListAdapter(context, s,
+						s.messages);
 
 				handler.post(new Runnable() {
 					@Override
@@ -55,8 +68,25 @@ public class ChatActivity extends Activity {
 				});
 			}
 		});
+
+		mMsgSend.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+	            try {
+	                s.sendMessage = mMsgComposer.getText().toString();
+	                s.sendReference = 0;
+	                s.sendPing = false;
+	                new HTTPThread(s, HTTPThread.SEND_MESSAGE).start();
+	                mMsgComposer.setText("");
+	            }
+	            catch (Exception e) {
+	                e.printStackTrace();
+	                s.error(e.toString());
+	            }
+			}
+		});
 	}
-	
+
 	private void showProgress(final boolean show) {
 		this.setProgressBarVisibility(show);
 		this.setProgressBarIndeterminate(show);
