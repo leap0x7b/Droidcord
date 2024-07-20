@@ -3,7 +3,6 @@ package leap.droidcord;
 import cc.nnproject.json.JSONObject;
 
 public class User extends Snowflake implements HasIcon {
-	String username;
 	String name;
 	String iconHash;
 
@@ -14,12 +13,11 @@ public class User extends Snowflake implements HasIcon {
 	public User(State s, JSONObject data) {
 		super(Long.parseLong(data.getString("id")));
 
-		username = data.getString("username", null);
-		name = data.getString("global_name", username);
+        name = data.getString("global_name", null);
+        if (name == null) {
+            name = data.getString("username", "(no name)");
+        }
 		
-		if (s.iconType == State.ICON_TYPE_NONE)
-			return;
-
 		iconHash = data.getString("avatar", null);
 
 		StringBuffer initialsBuf = new StringBuffer();

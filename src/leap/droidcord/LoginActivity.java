@@ -204,6 +204,7 @@ public class LoginActivity extends Activity {
 					editor.putString("gateway", mGatewayUrl);
 					editor.putString("token", mToken);
 					editor.putInt("tokenType", mSendTokenAs);
+					editor.putInt("messageLoadCount", 25);
 					editor.commit();
 
 					handler.post(new Runnable() {

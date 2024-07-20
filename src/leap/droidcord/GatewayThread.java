@@ -23,9 +23,9 @@ public class GatewayThread extends Thread {
 
 	public GatewayThread(leap.droidcord.State s, String gateway, String token) {
 		this.s = s;
-		String[] split = gateway.split(":");
-		this.gateway = split[1].replaceAll("socket:", "").replaceAll("/", "");
-		this.port = Integer.parseInt(split[2]);
+		String[] split = gateway.replaceAll("socket:", "").replaceAll("/", "").split(":");
+		this.gateway = split[0];
+		this.port = Integer.parseInt(split[1]);
 		this.token = token;
 
 		s.subscribedGuilds = new Vector<Guild>();
@@ -47,12 +47,12 @@ public class GatewayThread extends Thread {
 
 	public void disconnected(String message) {
 		disconnect();
-		if (s.autoReConnect) {
-			s.gateway = new GatewayThread(s, gateway, token);
+		//if (s.autoReConnect) {
+			s.gateway = new GatewayThread(s, gateway + ":" + port, token);
 			s.gateway.start();
-		} else {
+		/*} else {
 			//s.disp.setCurrent(new GatewayAlert(s, message), s.disp.getCurrent());
-		}
+		}*/
 	}
 
 	public void send(JSONObject msg) {
@@ -166,13 +166,7 @@ public class GatewayThread extends Thread {
 
                         // If we're on the newest page, make the new message visible
                         // Add the new message to the message list
-                        s.messages.insertElementAt(new Message(s, msgData), 0);
-
-                        // Remove the oldest message in the message list so it doesn't break pagination
-                        // Except for channels that have less messages than the full page capacity
-                        if (s.messages.size() > s.messageLoadCount) {
-                            s.messages.removeElementAt(s.messages.size() - 1);
-                        }
+                        s.messages.insertElementAt(new Message(s, msgData), s.messages.size());
 
                         // Remove this user's typing indicator
                         if (s.isDM) {
@@ -193,12 +187,14 @@ public class GatewayThread extends Thread {
 
                         // Redraw the message list and mark it as read
 
-                        /*if (page == 0) {
-                            s.channelView.update(false, true);
+                        //if (page == 0) {
+                            //s.channelView.update(false, true);
+                        	s.messagesAdapter.notifyDataSetChanged();
+                        	s.messagesView.setSelection(s.messagesAdapter.getCount() - 1);
                             s.unreads.autoSave = false;
-                            s.unreads.markRead(chId, Long.parseLong(msgId));
+                            s.unreads.markRead(chId, msgId);
                             s.unreads.autoSave = true;
-                        } else {
+                        /*} else {
                             // If user is not on the newest page of messages, ask them to refresh
                             // There is no easy way to do it any other way without breaking pagination
                             s.channelView.outdated = true;

@@ -1,11 +1,12 @@
 package leap.droidcord;
 
-import java.io.Serializable;
 import java.util.*;
 
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
 
 public class State {
 	static final int ICON_TYPE_NONE = 0;
@@ -55,6 +56,9 @@ public class State {
 	Vector<Message> messages;
 	Vector<String> typingUsers;
 	Vector<Long> typingUserIDs;
+	
+	MessageListAdapter messagesAdapter;
+	ListView messagesView;
 
 	// Parameters for message/reply sending
 	String sendMessage;

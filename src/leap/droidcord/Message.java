@@ -223,7 +223,7 @@ public class Message extends Snowflake {
 	 *            The ID of the top-most message in this message cluster.
 	 * @return true if author should be shown, false if messages are "merged"
 	 */
-	public boolean shouldShowAuthor(Message above, String clusterStart) {
+	public boolean shouldShowAuthor(Message above, long clusterStart) {
 		// Different authors -> true
 		if (!(above.author.id == author.id))
 			return true;
@@ -239,7 +239,7 @@ public class Message extends Snowflake {
 		// Message was sent more than 7 minutes after the first message of the
 		// cluster -> true
 		long thisMsgTime = id >> 22;
-		long firstMsgTime = Long.parseLong(clusterStart) >> 22;
+		long firstMsgTime = clusterStart >> 22;
 		if (thisMsgTime - firstMsgTime > 7 * 60 * 1000)
 			return true;
 

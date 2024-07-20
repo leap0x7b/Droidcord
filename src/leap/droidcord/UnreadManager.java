@@ -8,7 +8,7 @@ import android.preference.PreferenceManager;
 import cc.nnproject.json.*;
 
 public class UnreadManager {
-	private Hashtable<String, String> channels;
+	private Hashtable<Long, Long> channels;
 	private State s;
 	private Context c;
 	public boolean autoSave;
@@ -16,7 +16,7 @@ public class UnreadManager {
 	public UnreadManager(State s, Context c) {
 		this.s = s;
 		this.c = c;
-		channels = new Hashtable<String, String>();
+		channels = new Hashtable<Long, Long>();
 		autoSave = true;
 
 		// Load last read message IDs from RMS (convert JSON to hashtable)
@@ -29,13 +29,9 @@ public class UnreadManager {
 			for (int i = 0; i < json.size(); i++) {
 				JSONArray elem = json.getArray(i);
 				// Convert base-36 string -> long -> decimal string
-				long key = Long.parseLong(elem.getString(0),
-						Character.MAX_RADIX);
-				long value = Long.parseLong(elem.getString(1),
-						Character.MAX_RADIX);
-				String keyStr = String.valueOf(key);
-				String valStr = String.valueOf(value);
-				channels.put(keyStr, valStr);
+				long key = elem.getLong(0);
+				long value = elem.getLong(1);
+				channels.put(key, value);
 			}
 		} catch (Exception e) {
 			s.error(e.toString());
@@ -46,14 +42,14 @@ public class UnreadManager {
 		JSONArray json = new JSONArray();
 
 		// Convert hashtable to JSON array of key/value pairs
-		for (Enumeration<String> e = channels.keys(); e.hasMoreElements();) {
+		for (Enumeration<Long> e = channels.keys(); e.hasMoreElements();) {
 			JSONArray elem = new JSONArray();
-			String key = (String) e.nextElement();
-			String value = (String) channels.get(key);
+			long key = e.nextElement();
+			long value = channels.get(key);
 
 			// Convert decimal string -> long -> base-36 string
-			elem.add(Long.toString(Long.parseLong(key), Character.MAX_RADIX));
-			elem.add(Long.toString(Long.parseLong(value), Character.MAX_RADIX));
+			elem.add(key);
+			elem.add(value);
 			json.add(elem);
 		}
 
@@ -69,8 +65,8 @@ public class UnreadManager {
 		}
 	}
 
-	private void put(String channelID, String lastReadTime) {
-		if (lastReadTime == null || lastReadTime.equals("0"))
+	private void put(long channelID, long lastReadTime) {
+		if (lastReadTime == 0)
 			return;
 		channels.put(channelID, lastReadTime);
 		if (autoSave)
@@ -79,14 +75,13 @@ public class UnreadManager {
 
 	public boolean hasUnreads(long channelID, long lastMessageID) {
 		long lastMessageTime = lastMessageID >> 22;
-
-		String lastReadTime = (String) channels.get(channelID);
-		if (lastReadTime == null) {
-			put(String.valueOf(channelID), String.valueOf(lastMessageTime));
+		long lastReadTime = channels.get(channelID);
+		if (lastReadTime == 0) {
+			put(channelID, lastMessageTime);
 			return false;
 		}
 
-		return Long.parseLong(lastReadTime) < lastMessageTime;
+		return lastReadTime < lastMessageTime;
 	}
 
 	public boolean hasUnreads(Channel ch) {
@@ -99,11 +94,10 @@ public class UnreadManager {
 
 	public void markRead(Long channelID, long lastMessageID) {
 		long lastMessageTime = lastMessageID >> 22;
-		String lastReadTime = (String) channels.get(channelID);
+		long lastReadTime = channels.get(channelID);
 
-		if (lastReadTime == null
-				|| Long.parseLong(lastReadTime) < lastMessageTime) {
-			put(String.valueOf(channelID), String.valueOf(lastMessageTime));
+		if (lastReadTime == 0 || lastReadTime < lastMessageTime) {
+			put(channelID, lastMessageTime);
 		}
 	}
 

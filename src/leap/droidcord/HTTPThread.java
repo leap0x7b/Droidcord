@@ -27,8 +27,8 @@ public class HTTPThread extends Thread {
 	int action;
 
 	// Parameters for FETCH_MESSAGES
-	String fetchMsgsBefore;
-	String fetchMsgsAfter;
+	long fetchMsgsBefore;
+	long fetchMsgsAfter;
 
 	// Parameters for FETCH_ICON
 	HasIcon iconTarget; // item (guild or DM channel) that this icon should be
@@ -193,18 +193,37 @@ public class HTTPThread extends Thread {
 
 				StringBuffer url = new StringBuffer("/channels/" + channel.id
 						+ "/messages?limit=" + s.messageLoadCount);
-				if (fetchMsgsBefore != null)
+				if (fetchMsgsBefore != 0)
 					url.append("&before=" + fetchMsgsBefore);
-				if (fetchMsgsAfter != null)
+				if (fetchMsgsAfter != 0)
 					url.append("&after=" + fetchMsgsAfter);
 
 				JSONArray messages = JSON.getArray(s.http.get(url.toString()));
 				s.messages = new Vector<Message>();
 
-				for (int i = messages.size() - 1; i >= 0; i--) {
+				for (int i = 0; i < messages.size(); i++) {
 					s.messages
 							.addElement(new Message(s, messages.getObject(i)));
 				}
+				
+				// FIXME: this doens't work properly for some reason
+				/*Message first = s.messages.elementAt(s.messages.size() - 1);
+				first.showAuthor = true;
+
+				Message above = first;
+				long clusterStart = first.id;
+
+				if (s.messages.size() > 1) {
+					for (int i = s.messages.size() - 2; i >= 0; i--) {
+						Message msg = (Message) s.messages.elementAt(i);
+						msg.showAuthor = msg.shouldShowAuthor(above,
+								clusterStart);
+
+						if (msg.showAuthor)
+							clusterStart = msg.id;
+						above = msg;
+					}
+				}*/
 
                 /*if ((fetchMsgsBefore == null && fetchMsgsAfter == null) || s.sendMessage != null) {
                     // If user opened a new channel or sent a message, create a new channel view

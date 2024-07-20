@@ -1,6 +1,7 @@
 package leap.droidcord;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
@@ -32,10 +33,15 @@ public class MessageListAdapter extends BaseAdapter {
 		this.context = context;
 		this.s = s;
 		this.messages = messages;
+		Collections.reverse(this.messages);
 
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		iconSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
 				48 + 0.5f, metrics);
+	}
+
+	public Vector<Message> getData() {
+		return this.messages;
 	}
 
 	@Override
@@ -71,14 +77,23 @@ public class MessageListAdapter extends BaseAdapter {
 		String type = message.author.getIconType();
 		long id = message.author.getIconID();
 		String hash = message.author.getIconHash();
-		avatar.setTag(s.cdn + type + id + "/" + hash + "." + format
-				+ "?size=" + iconSize);
+		avatar.setTag(s.cdn + type + id + "/" + hash + "." + format + "?size="
+				+ iconSize);
 		LoadImage loadImage = new LoadImage(avatar);
 		loadImage.call();
 
 		TextView author = (TextView) convertView.findViewById(R.id.msg_author);
-		TextView timestamp = (TextView) convertView.findViewById(R.id.msg_timestamp);
-		TextView content = (TextView) convertView.findViewById(R.id.msg_content);
+		TextView timestamp = (TextView) convertView
+				.findViewById(R.id.msg_timestamp);
+		TextView content = (TextView) convertView
+				.findViewById(R.id.msg_content);
+
+		/*if (!message.showAuthor) {
+			View metadata = convertView.findViewById(R.id.msg_metadata);
+			metadata.setVisibility(View.GONE);
+			avatar.getLayoutParams().height = 0;
+		}*/
+
 		author.setText(message.author.name);
 		timestamp.setText(message.timestamp);
 		content.setText(message.content);
