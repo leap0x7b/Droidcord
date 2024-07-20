@@ -145,7 +145,7 @@ public class LoginActivity extends Activity {
 	/**
 	 * Shows the progress UI and hides the login form.
 	 */
-	public void showProgress(final boolean show) {
+	private void showProgress(final boolean show) {
 		this.setProgressBarVisibility(show);
 		this.setProgressBarIndeterminate(show);
 	}

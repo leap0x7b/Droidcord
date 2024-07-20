@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<leap.droidcord.ui.Message
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<leap.droidcord.ui.Message xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
-    android:layout_margin="4dp"
     android:orientation="vertical"
-    tools:context="leap.droidcord.ui.Message" >
+    android:padding="4dp"
+    tools:context="leap.droidcord.ui.Message">
 
     <LinearLayout
         android:id="@+id/msg_reply"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp" >
+        android:layout_marginLeft="20dp"
+        android:visibility="gone">
 
         <!-- TODO: Make this an XML vector drawable instead -->
         <TextView
@@ -99,33 +99,6 @@
                 android:layout_height="wrap_content"
                 android:text="Message"
                 android:textAppearance="?android:attr/textAppearance" />
-
-            <LinearLayout
-                android:id="@+id/msg_attachment"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" >
-
-                <ImageView
-                    android:id="@+id/msg_attachment_image"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:scaleType="fitCenter"
-                    android:src="@drawable/ic_launcher" />
-
-                <VideoView
-                    android:id="@+id/msg_attachment_video"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone" />
-
-                <leap.droidcord.ui.Embed
-                    android:id="@+id/msg_embed"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content" >
-                </leap.droidcord.ui.Embed>
-
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

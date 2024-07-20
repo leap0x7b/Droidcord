@@ -1,5 +1,7 @@
 package leap.droidcord;
 
+import java.io.Serializable;
+
 import cc.nnproject.json.*;
 
 public class DirectMessage extends Snowflake implements HasIcon {

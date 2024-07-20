@@ -1,5 +1,6 @@
 package leap.droidcord;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -8,10 +9,12 @@ import android.app.TabActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.widget.AdapterView;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.ListAdapter;
@@ -19,12 +22,14 @@ import android.widget.ListView;
 import android.widget.TabHost;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.Window;
 
 @SuppressWarnings("deprecation")
 public class MainActivity extends TabActivity {
 
-	private State s;
+	public static State s;
+	private Context context;
 	ExpandableListView mGuildsView;
 	ExpandableListAdapter mGuildsAdapter;
 	ListView mDmsView;
@@ -39,6 +44,7 @@ public class MainActivity extends TabActivity {
 		TabHost tabHost = getTabHost();
 		mGuildsView = (ExpandableListView) findViewById(R.id.servers);
 		s = new State(this);
+		context = this;
 
 		LayoutInflater.from(this).inflate(R.layout.activity_main,
 				tabHost.getTabContentView(), true);
@@ -64,17 +70,18 @@ public class MainActivity extends TabActivity {
 			String gateway_url = sp.getString("gateway", null);
 			String token = sp.getString("token", null);
 			int token_type = sp.getInt("tokenType", 0);
+			int message_load_count = sp.getInt("messageLoadCount", 0);
 
 			try {
 				s.useGateway = use_gateway;
 				s.tokenType = token_type;
+				s.messageLoadCount = message_load_count;
 				s.login(api_url, gateway_url, cdn_url, token);
 				// FIXME: for some reason making this a thread doesn't fetch the guild list and would just error out with a null pointer exception
 				//new HTTPThread(s, HTTPThread.FETCH_GUILDS).start();
 				
 				ExecutorService executor = Executors.newSingleThreadExecutor();
 				final Handler handler = new Handler(Looper.getMainLooper());
-				final Context context = this;
 
 				showProgress(true);
 				executor.execute(new Runnable() {
@@ -100,6 +107,20 @@ public class MainActivity extends TabActivity {
 				//s.error(e.toString());
 				e.printStackTrace();
 			}
+			
+			mGuildsView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+
+				@Override
+				public boolean onChildClick(ExpandableListView parent, View v,
+						int groupPosition, int childPosition, long id) {
+					Intent intent = new Intent(context, ChatActivity.class);
+					s.selectedGuild = (Guild) mGuildsAdapter.getGroup(groupPosition);
+					s.selectedChannel = (Channel) mGuildsAdapter.getChild(groupPosition, childPosition);
+					startActivity(intent);
+					return true;
+				}
+
+			});
 		}
 	}
 	

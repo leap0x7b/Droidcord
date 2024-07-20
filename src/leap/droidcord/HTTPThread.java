@@ -201,7 +201,7 @@ public class HTTPThread extends Thread {
 				JSONArray messages = JSON.getArray(s.http.get(url.toString()));
 				s.messages = new Vector<Message>();
 
-				for (int i = 0; i < messages.size(); i++) {
+				for (int i = messages.size() - 1; i >= 0; i--) {
 					s.messages
 							.addElement(new Message(s, messages.getObject(i)));
 				}

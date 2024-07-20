@@ -25,5 +25,6 @@
     <string name="hello_world">Hello world!</string>
     <string name="send">Send</string>
     <string name="msg_composer_hint">Message %s</string>
+    <string name="reply_to">&lt;b&gt;Reply to&lt;/b&gt; %s</string>
 
 </resources>

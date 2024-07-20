@@ -13,10 +13,12 @@ TODO: Make it build on Gradle and Android Studio.
 ### Working
 * Logging in
 * Server list
+* Channel lists
+* Message reading
 
 ### Not implemented
-* Channel lists
-* Message reading, sending, editing, deleting
+* DM lists
+* Message sending, editing, deleting
 * Replying to messages
 * Reading older messages
 * Direct messages and group DMs

@@ -19,19 +19,19 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class DMListAdapter extends BaseAdapter {
+public class MessageListAdapter extends BaseAdapter {
 
 	private Context context;
 	private State s;
-	private Vector<DirectMessage> dms;
+	private Vector<Message> messages;
 	// serve nothing other than preventing calculating the pixel size every time
 	// the item is shown on-screen
 	private int iconSize;
 
-	public DMListAdapter(Context context, State s, Vector<DirectMessage> dms) {
+	public MessageListAdapter(Context context, State s, Vector<Message> messages) {
 		this.context = context;
 		this.s = s;
-		this.dms = dms;
+		this.messages = messages;
 
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		iconSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
@@ -40,12 +40,12 @@ public class DMListAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int position) {
-		return dms.get(position);
+		return messages.get(position);
 	}
 
 	@Override
 	public int getCount() {
-		return dms.size();
+		return messages.size();
 	}
 
 	@Override
@@ -55,30 +55,33 @@ public class DMListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final DirectMessage dm = (DirectMessage) getItem(position);
+		final Message message = (Message) getItem(position);
 		if (convertView == null) {
 			LayoutInflater layoutInflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-			convertView = layoutInflater.inflate(R.layout.dm_list_item, null);
+			convertView = layoutInflater.inflate(R.layout.message, null);
 		}
 
-		final ImageView imageView = (ImageView) convertView
-				.findViewById(R.id.dm_item_icon);
-		imageView.setImageDrawable(context.getResources().getDrawable(
+		final ImageView avatar = (ImageView) convertView
+				.findViewById(R.id.msg_avatar);
+		avatar.setImageDrawable(context.getResources().getDrawable(
 				R.drawable.ic_launcher));
 
 		String format = (s.useJpeg ? "jpg" : "png");
-		String type = dm.getIconType();
-		long id = dm.getIconID();
-		String hash = dm.getIconHash();
-		imageView.setTag(s.cdn + type + id + "/" + hash + "." + format
+		String type = message.author.getIconType();
+		long id = message.author.getIconID();
+		String hash = message.author.getIconHash();
+		avatar.setTag(s.cdn + type + id + "/" + hash + "." + format
 				+ "?size=" + iconSize);
-		LoadImage loadImage = new LoadImage(imageView);
+		LoadImage loadImage = new LoadImage(avatar);
 		loadImage.call();
 
-		TextView textView = (TextView) convertView
-				.findViewById(R.id.dm_item_name);
-		textView.setText(dm.name);
+		TextView author = (TextView) convertView.findViewById(R.id.msg_author);
+		TextView timestamp = (TextView) convertView.findViewById(R.id.msg_timestamp);
+		TextView content = (TextView) convertView.findViewById(R.id.msg_content);
+		author.setText(message.author.name);
+		timestamp.setText(message.timestamp);
+		content.setText(message.content);
 
 		return convertView;
 	}

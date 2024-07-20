@@ -1,5 +1,6 @@
 package leap.droidcord;
 
+import java.io.Serializable;
 import java.util.*;
 
 import android.content.Context;

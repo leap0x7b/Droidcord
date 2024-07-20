@@ -3,56 +3,60 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="leap.droidcord.ChatActivity" >
+    tools:context="leap.droidcord.ChatActivity">
 
     <ListView
         android:id="@+id/messages"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1" >
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:stackFromBottom="true">
     </ListView>
+
+    <LinearLayout
+        android:id="@+id/reply_panel"
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:background="@android:drawable/bottom_bar"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/reply_to"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/reply_to"
+            android:textAppearance="?android:attr/textAppearance"
+            android:textColor="@android:color/white"/>
+
+        <ImageButton
+            android:id="@+id/cancel_reply"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_btn_close_panel"/>
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@android:drawable/bottom_bar"
         android:orientation="vertical"
-        android:padding="5dp" >
+        android:padding="5dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center_vertical"
-            android:visibility="gone" >
-
-            <TextView
-                android:id="@+id/proxy_warning"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Medium Text"
-                android:textAppearance="?android:attr/textAppearanceInverse" />
-
-            <ImageButton
-                android:id="@+id/imageButton1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:scaleType="center"
-                android:src="@android:drawable/ic_menu_close_clear_cancel" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:addStatesFromChildren="true"
-                android:background="@android:drawable/edit_text" >
+                android:background="@android:drawable/edit_text">
 
                 <EditText
                     android:id="@+id/msg_composer"
@@ -64,8 +68,7 @@
                     android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine|textImeMultiLine"
                     android:maxLength="2000"
                     android:maxLines="4"
-                    android:nextFocusRight="@+id/send_button" >
-
+                    android:nextFocusRight="@+id/send_button">
                 </EditText>
 
                 <TextView
@@ -80,14 +83,14 @@
                     android:textColor="#ffffffff"
                     android:textSize="11sp"
                     android:textStyle="bold"
-                    android:visibility="gone" />
+                    android:visibility="gone"/>
             </RelativeLayout>
 
             <Button
                 android:id="@+id/send_button"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/send" />
+                android:layout_height="match_parent"
+                android:text="@string/send"/>
         </LinearLayout>
     </LinearLayout>
 
