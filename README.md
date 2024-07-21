@@ -2,29 +2,28 @@
 A Discord client for old Android <4.x devices. Uses proxy servers for the [HTTP](https://github.com/gtrxAC/discord-j2me/blob/main/proxy) and [gateway](https://github.com/gtrxAC/discord-j2me-server) connection. Currently work-in-progress.
 
 ## How to build
-1. Install (Open)JDK 8 and an old version of Eclipse as ADT doesn't work with newer versions of Eclipse. (Andmore might work for the latest version of Eclipse though I didn't use that) I use Eclipse 4.2 (Juno) from 2012 though using newer versions should work fine as long as it's below version 4.9.
-2. Install Android Development Tools from the Eclipse Marketplace. If Eclipse Marketplace doesn't exist on your installation of Eclipse, install it from Help > Install New Software... and search for Marketplace.
-3. Copy the repository to your workspace folder. It should look something like `C:\User\[user]\[your workspace folder]\Droidcord` if you're on Windows or `/home/[user]/[your workspace folder]/Droidcord` if you're on Linux.
-4. Run the project.
-
-TODO: Make it build on Gradle and Android Studio.
+1. Install Android Studio. I use Android Studio 1.0 (yes the very first one) from 2014 though newer versions probably works fine.
+2. Clone the repository (idk if you can clone a git repo directly from modern Android Studio since I use 1.0 which doesn't have one)
+3. Run the project.
 
 ## Status
 ### Working
 * Logging in
 * Server list
-* Channel lists
+* Channel list
 * Message reading
+* Message sending
+* Gateway/live message updates
 
 ### Not implemented
-* DM lists
-* Message sending, editing, deleting
+* DM list
+* Message editing
+* Message deleting
 * Replying to messages
 * Reading older messages
 * Direct messages and group DMs
 * Attachment viewing
 * Attachment sending
-* Gateway/live message updates
 * Unread message indicators
 * Jumping to messages (e.g. replies)
 * Initiating DM conversations
