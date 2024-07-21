@@ -32,6 +32,7 @@ public class MessageListAdapter extends BaseAdapter {
 	// serve nothing other than preventing calculating the pixel size every time
 	// the item is shown on-screen
 	private int iconSize;
+	private int replyIconSize;
 
 	public MessageListAdapter(Context context, State s, Vector<Message> messages) {
 		this.context = context;
@@ -42,6 +43,8 @@ public class MessageListAdapter extends BaseAdapter {
 		DisplayMetrics metrics = context.getResources().getDisplayMetrics();
 		iconSize = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
 				48 + 0.5f, metrics);
+		replyIconSize = (int) TypedValue.applyDimension(
+				TypedValue.COMPLEX_UNIT_DIP, 16 + 0.5f, metrics);
 	}
 
 	public Vector<Message> getData() {
@@ -65,68 +68,116 @@ public class MessageListAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		final Message message = (Message) getItem(position);
+		ViewHolder viewHolder;
+		Message message = (Message) getItem(position);
+
 		if (convertView == null) {
 			LayoutInflater layoutInflater = (LayoutInflater) context
 					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 			convertView = layoutInflater.inflate(R.layout.message, null);
+			viewHolder = new ViewHolder(convertView);
+			convertView.setTag(viewHolder);
+		} else {
+			viewHolder = (ViewHolder) convertView.getTag();
 		}
 
-		final ImageView avatar = (ImageView) convertView
-				.findViewById(R.id.msg_avatar);
-		avatar.setImageDrawable(context.getResources().getDrawable(
+		viewHolder.author.setText(message.author.name);
+		viewHolder.timestamp.setText(message.timestamp);
+		viewHolder.content.setText(message.content);
+
+		if (!message.showAuthor && message.recipient == null) {
+			viewHolder.metadata.setVisibility(View.GONE);
+			viewHolder.avatar.getLayoutParams().height = 0;
+		} else {
+			viewHolder.metadata.setVisibility(View.VISIBLE);
+			viewHolder.avatar.getLayoutParams().height = iconSize;
+		}
+
+		viewHolder.avatar.setImageDrawable(context.getResources().getDrawable(
 				R.drawable.ic_launcher));
 
 		String format = (s.useJpeg ? "jpg" : "png");
 		String type = message.author.getIconType();
 		long id = message.author.getIconID();
 		String hash = message.author.getIconHash();
-		avatar.setTag(s.cdn + type + id + "/" + hash + "." + format + "?size="
-				+ iconSize);
-		LoadImage loadImage = new LoadImage(avatar);
+		viewHolder.avatar.setTag(s.cdn + type + id + "/" + hash + "." + format
+				+ "?size=" + iconSize);
+		LoadImage loadImage = new LoadImage(viewHolder.avatar);
 		loadImage.call();
 
-		View msg = (View) convertView.findViewById(R.id.message);
-		TextView author = (TextView) convertView.findViewById(R.id.msg_author);
-		TextView timestamp = (TextView) convertView
-				.findViewById(R.id.msg_timestamp);
-		TextView content = (TextView) convertView
-				.findViewById(R.id.msg_content);
-		
-		author.setText(message.author.name);
-		timestamp.setText(message.timestamp);
-		content.setText(message.content);
-		/*if (!message.showAuthor) {
-			View metadata = convertView.findViewById(R.id.msg_metadata);
-			metadata.setVisibility(View.GONE);
-			avatar.getLayoutParams().height = 0;
-		}*/
-		
-		View reply = (View) convertView.findViewById(R.id.msg_reply);
-		TextView replyAuthor = (TextView) convertView.findViewById(R.id.reply_author);
-		TextView replyContent = (TextView) convertView
-				.findViewById(R.id.reply_content);
+		if (message.recipient != null) {
+			viewHolder.reply.setVisibility(View.VISIBLE);
+			viewHolder.replyAuthor.setText(message.recipient.name);
+			viewHolder.replyContent.setText(message.refContent);
 
-		View status = (View) convertView.findViewById(R.id.status);
-		TextView statusText = (TextView) convertView
-				.findViewById(R.id.status_text);
-		TextView statusTimestamp = (TextView) convertView
-				.findViewById(R.id.status_timestamp);
-		
+			viewHolder.replyAvatar.setImageDrawable(context.getResources()
+					.getDrawable(R.drawable.ic_launcher));
+
+			String recipientType = message.recipient.getIconType();
+			long recipientId = message.recipient.getIconID();
+			String recipientHash = message.recipient.getIconHash();
+			viewHolder.replyAvatar.setTag(s.cdn + recipientType + recipientId
+					+ "/" + recipientHash + "." + format + "?size="
+					+ replyIconSize);
+			LoadImage recipientLoadImage = new LoadImage(viewHolder.replyAvatar);
+			recipientLoadImage.call();
+		} else {
+			viewHolder.reply.setVisibility(View.GONE);
+		}
+
 		if (message.isStatus) {
-			msg.setVisibility(View.GONE);
-			status.setVisibility(View.VISIBLE);
+			viewHolder.msg.setVisibility(View.GONE);
+			viewHolder.status.setVisibility(View.VISIBLE);
 
-			SpannableStringBuilder sb = new SpannableStringBuilder(message.author.name + " " + message.content);
-			sb.setSpan(new StyleSpan(Typeface.BOLD), 0, message.author.name.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
-			statusText.setText(sb);
-			statusTimestamp.setText(message.timestamp);
-		} 
+			SpannableStringBuilder sb = new SpannableStringBuilder(
+					message.author.name + " " + message.content);
+			sb.setSpan(new StyleSpan(Typeface.BOLD), 0,
+					message.author.name.length(),
+					Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+			viewHolder.statusText.setText(sb);
+			viewHolder.statusTimestamp.setText(message.timestamp);
+		} else {
+			viewHolder.msg.setVisibility(View.VISIBLE);
+			viewHolder.status.setVisibility(View.GONE);
+		}
 
 		return convertView;
 	}
 
-	public class LoadImage implements Callable<Void> {
+	private static class ViewHolder {
+		View msg;
+		TextView author;
+		TextView timestamp;
+		TextView content;
+		ImageView avatar;
+		View metadata;
+		View reply;
+		TextView replyAuthor;
+		TextView replyContent;
+		ImageView replyAvatar;
+		View status;
+		TextView statusText;
+		TextView statusTimestamp;
+
+		public ViewHolder(View view) {
+			msg = view.findViewById(R.id.message);
+			author = (TextView) view.findViewById(R.id.msg_author);
+			timestamp = (TextView) view.findViewById(R.id.msg_timestamp);
+			content = (TextView) view.findViewById(R.id.msg_content);
+			avatar = (ImageView) view.findViewById(R.id.msg_avatar);
+			metadata = view.findViewById(R.id.msg_metadata);
+			reply = view.findViewById(R.id.msg_reply);
+			replyAuthor = (TextView) view.findViewById(R.id.reply_author);
+			replyContent = (TextView) view.findViewById(R.id.reply_content);
+			replyAvatar = (ImageView) view.findViewById(R.id.reply_avatar);
+			status = view.findViewById(R.id.status);
+			statusText = (TextView) view.findViewById(R.id.status_text);
+			statusTimestamp = (TextView) view
+					.findViewById(R.id.status_timestamp);
+		}
+	}
+
+	private class LoadImage implements Callable<Void> {
 
 		private String url;
 		private ImageView imageView;

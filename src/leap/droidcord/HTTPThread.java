@@ -207,7 +207,7 @@ public class HTTPThread extends Thread {
 				}
 				
 				// FIXME: this doens't work properly for some reason
-				/*Message first = s.messages.elementAt(s.messages.size() - 1);
+				Message first = s.messages.elementAt(s.messages.size() - 1);
 				first.showAuthor = true;
 
 				Message above = first;
@@ -223,7 +223,7 @@ public class HTTPThread extends Thread {
 							clusterStart = msg.id;
 						above = msg;
 					}
-				}*/
+				}
 
                 /*if ((fetchMsgsBefore == null && fetchMsgsAfter == null) || s.sendMessage != null) {
                     // If user opened a new channel or sent a message, create a new channel view

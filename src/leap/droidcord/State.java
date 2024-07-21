@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 public class State {
 	static final int ICON_TYPE_NONE = 0;
@@ -100,9 +101,12 @@ public class State {
 	}*/
 
 	public void error(String message) {
-		/*Toast toast = Toast.makeText(c, "Error: " + message, Toast.LENGTH_LONG);
-		toast.show();*/
-		System.out.println(message);
+		try {
+			Toast toast = Toast.makeText(c, "Error: " + message, Toast.LENGTH_LONG);
+			toast.show();
+		} catch (Exception e) {
+			System.out.println("Error: " + message);
+		}
 	}
 
 	public boolean gatewayActive() {

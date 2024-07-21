@@ -38,7 +38,6 @@ public class Message extends Snowflake {
 
 	public Message(State s, JSONObject data) {
 		super(Long.parseLong(data.getString("id")));
-		id = Long.parseLong(data.getString("id"));
 		author = new User(s, data.getObject("author"));
 
 		int t = data.getInt("type", 0);
