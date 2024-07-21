@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<leap.droidcord.ui.Embed
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/embed"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/embed_background"
+    android:orientation="horizontal"
+    tools:context="leap.droidcord.ui.Embed" >
+
+    <View
+        android:id="@+id/embed_color"
+        android:layout_width="2dp"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="2dp"
+        android:background="#f00" />
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="4dp"
+        android:layout_weight="1"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/embed_site_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Site name"
+            android:textAppearance="?android:attr/textAppearanceSmall" />
+
+        <TextView
+            android:id="@+id/embed_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Author"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@android:color/primary_text_dark"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/embed_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            android:textAppearance="?android:attr/textAppearance"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/embed_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Embed"
+            android:textColor="@android:color/primary_text_dark" />
+
+        <ImageView
+            android:id="@+id/embed_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_launcher" />
+
+        <VideoView
+            android:id="@+id/embed_video"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/embed_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:layout_marginBottom="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginTop="4dp"
+        android:scaleType="fitEnd"
+        android:src="@drawable/ic_launcher" />
+
+</leap.droidcord.ui.Embed>

@@ -1,0 +1,94 @@
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    tools:context="leap.droidcord.ChatActivity">
+
+    <ListView
+        android:id="@+id/messages"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="8dp"
+        android:stackFromBottom="true"
+        android:transcriptMode="alwaysScroll">
+
+    </ListView>
+
+    <LinearLayout
+        android:id="@+id/reply_panel"
+        android:layout_width="fill_parent"
+        android:layout_height="46dp"
+        android:background="@android:drawable/bottom_bar"
+        android:gravity="center_vertical"
+        android:padding="5dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/reply_to"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/reply_to"
+            android:textAppearance="?android:attr/textAppearance"
+            android:textColor="@android:color/white"/>
+
+        <ImageButton
+            android:id="@+id/cancel_reply"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/ic_btn_close_panel"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:drawable/bottom_bar"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <RelativeLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:addStatesFromChildren="true"
+            android:background="@android:drawable/edit_text">
+
+            <EditText
+                android:id="@+id/msg_composer"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="@string/msg_composer_hint"
+                android:imeOptions="actionSend|flagNoEnterAction"
+                android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine|textImeMultiLine"
+                android:maxLength="2000"
+                android:maxLines="4"
+                android:nextFocusRight="@+id/msg_send">
+            </EditText>
+
+            <TextView
+                android:id="@+id/msg_counter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
+                android:background="#88000000"
+                android:paddingLeft="3dip"
+                android:paddingRight="3dip"
+                android:textColor="#ffffffff"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:visibility="gone"/>
+        </RelativeLayout>
+
+        <Button
+            android:id="@+id/msg_send"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="@string/send"/>
+    </LinearLayout>
+
+</LinearLayout>

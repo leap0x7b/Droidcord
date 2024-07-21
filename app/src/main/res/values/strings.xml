@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Droidcord</string>
+    <string name="login">Log in</string>
+    <string name="api_url">API URL</string>
+    <string name="api_url_default">http://146.59.80.3</string>
+    <string name="cdn_url">CDN URL</string>
+    <string name="cdn_url_default">http://146.59.80.3:8080</string>
+    <string name="gateway_url">Gateway URL</string>
+    <string name="gateway_url_default">socket://146.59.80.3:8081</string>
+    <string name="token">Token</string>
+    <string name="use_gateway">Use gateway</string>
+    <string name="send_token_as">Send token as</string>
+        <string-array name="send_token_as">
+        <item>Header (default)</item>
+        <item>JSON</item>
+        <item>Query parameter</item>
+    </string-array>
+    <string name="error_field_required">This field is required</string>
+    <string name="reply_arrow">┌────</string>
+    <string name="proxy_warning">Only use proxies that you trust!</string>
+    <string name="token_info">The token can be found from your browser\'s dev tools (look online for help). Using an alt account is recommended.</string>
+    <string name="title_activity_chat">Chat</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="send">Send</string>
+    <string name="msg_composer_hint">Message %s</string>
+    <string name="reply_to">&lt;b&gt;Reply to&lt;/b&gt; %s</string>
+
+</resources>
