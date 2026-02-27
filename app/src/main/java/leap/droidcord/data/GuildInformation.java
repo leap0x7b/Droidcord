@@ -118,22 +118,25 @@ public class GuildInformation {
         if (!views.containsKey(key))
             return;
 
-        s.runOnUiThread(() -> {
-            final Vector<WeakReference<TextView>> references = views.get(key);
-            views.remove(key);
+        s.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+                final Vector<WeakReference<TextView>> references = views.get(key);
+                views.remove(key);
 
-            if (references == null || references.size() == 0)
-                return;
+                if (references == null || references.size() == 0)
+                    return;
 
-            for (WeakReference<TextView> ref : references) {
-                TextView textView = ref.get();
-                if (textView != null) {
-                    textView.setTextColor(color | 0xFF000000);
-                    textView.setText(name != null ? name : textView.getText());
+                for (WeakReference<TextView> ref : references) {
+                    TextView textView = ref.get();
+                    if (textView != null) {
+                        textView.setTextColor(color | 0xFF000000);
+                        textView.setText(name != null ? name : textView.getText());
+                    }
                 }
-            }
 
-            references.clear();
+                references.clear();
+			}
         });
     }
 

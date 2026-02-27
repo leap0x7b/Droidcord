@@ -44,22 +44,34 @@ public class MainActivity extends TabActivity {
 
         @Override
         public void run() {
-            s.api.aFetchGuilds(() -> {
-                mGuildsAdapter = new GuildListAdapter(MainActivity.this, mContext, s, s.guilds);
-                s.runOnUiThread(() -> {
-                    mGuildsView.setAdapter(mGuildsAdapter);
-                    if (mLoadCount.incrementAndGet() == 2)
-                        showProgress(false);
-                });
+            s.api.aFetchGuilds(new Runnable() {
+				@Override
+				public void run() {
+                    mGuildsAdapter = new GuildListAdapter(MainActivity.this, mContext, s, s.guilds);
+                    s.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+                            mGuildsView.setAdapter(mGuildsAdapter);
+                            if (mLoadCount.incrementAndGet() == 2)
+                                showProgress(false);
+						}
+                    });
+				}
             });
 
-            s.api.aFetchDirectMessages(() -> {
-                mDmsAdapter = new DMListAdapter(mContext, s, s.directMessages);
-                s.runOnUiThread(() -> {
-                    mDmsView.setAdapter(mDmsAdapter);
-                    if (mLoadCount.incrementAndGet() == 2)
-                        showProgress(false);
-                });
+            s.api.aFetchDirectMessages(new Runnable() {
+				@Override
+				public void run() {
+				    mDmsAdapter = new DMListAdapter(mContext, s, s.directMessages);
+                    s.runOnUiThread(new Runnable() {
+					    @Override
+					    public void run() {
+                            mDmsView.setAdapter(mDmsAdapter);
+                            if (mLoadCount.incrementAndGet() == 2)
+                                showProgress(false);
+					    }
+                    });
+				}
             });
         }
     }
@@ -116,26 +128,29 @@ public class MainActivity extends TabActivity {
             e.printStackTrace();
         }
 
-        mGuildsView.setOnChildClickListener((ExpandableListView parent, View v,
-                                             int groupPosition, int childPosition,
-                                             long id) -> {
-            Intent intent = new Intent(mContext, ChatActivity.class);
-            s.isDM = false;
-            s.selectedDm = null;
-            s.selectedGuild = (Guild) mGuildsAdapter.getGroup(groupPosition);
-            s.selectedChannel = (Channel) mGuildsAdapter.getChild(groupPosition, childPosition);
-            startActivity(intent);
-            return true;
+        mGuildsView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+		    @Override
+			public boolean onChildClick(ExpandableListView parent, View v, int groupPosition, int childPosition, long id) {
+                Intent intent = new Intent(mContext, ChatActivity.class);
+                s.isDM = false;
+                s.selectedDm = null;
+                s.selectedGuild = (Guild) mGuildsAdapter.getGroup(groupPosition);
+                s.selectedChannel = (Channel) mGuildsAdapter.getChild(groupPosition, childPosition);
+                startActivity(intent);
+				return true;
+			}
         });
 
-        mDmsView.setOnItemClickListener((AdapterView<?> parent, View v, int position,
-                                         long id) -> {
-            Intent intent = new Intent(mContext, ChatActivity.class);
-            s.isDM = true;
-            s.selectedDm = (DirectMessage) mDmsAdapter.getItem(position);
-            s.selectedGuild = null;
-            s.selectedChannel = null;
-            startActivity(intent);
+        mDmsView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		    @Override
+		    public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                Intent intent = new Intent(mContext, ChatActivity.class);
+                s.isDM = true;
+                s.selectedDm = (DirectMessage) mDmsAdapter.getItem(position);
+                s.selectedGuild = null;
+                s.selectedChannel = null;
+                startActivity(intent);
+			}
         });
     }
 

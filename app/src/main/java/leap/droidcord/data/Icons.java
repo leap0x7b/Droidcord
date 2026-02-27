@@ -99,21 +99,24 @@ public class Icons {
         if (!imageViews.containsKey(hash))
             return;
 
-        s.runOnUiThread(() -> {
-            final Vector<WeakReference<ImageView>> references = imageViews.get(hash);
-            imageViews.remove(hash);
+        s.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+                final Vector<WeakReference<ImageView>> references = imageViews.get(hash);
+                imageViews.remove(hash);
 
-            for (int i = 0; i < references.size(); i++) {
-                WeakReference<ImageView> ref = references.get(i);
-                if (ref == null)
-                    continue;
+                for (int i = 0; i < references.size(); i++) {
+                    WeakReference<ImageView> ref = references.get(i);
+                    if (ref == null)
+                        continue;
 
-                ImageView imageView = ref.get();
-                if (imageView != null && imageView.getTag() != null && imageView.getTag().equals(hash)) {
-                    imageView.setImageBitmap(icon);
-                    imageView.invalidate();
+                    ImageView imageView = ref.get();
+                    if (imageView != null && imageView.getTag() != null && imageView.getTag().equals(hash)) {
+                        imageView.setImageBitmap(icon);
+                        imageView.invalidate();
+                    }
                 }
-            }
+		    }
         });
     }
 }

@@ -47,25 +47,34 @@ public class ChatActivity extends Activity {
 
         showProgress(true);
 
-        s.api.aFetchMessages(0, 0, () -> {
-            s.messagesAdapter = new MessageListAdapter(context, s, s.messages);
-            s.runOnUiThread(() -> {
-                s.messagesView.setAdapter(s.messagesAdapter);
-                showProgress(false);
-            });
+        s.api.aFetchMessages(0, 0, new Runnable() {
+			@Override
+			public void run() {
+                s.messagesAdapter = new MessageListAdapter(context, s, s.messages);
+                s.runOnUiThread(new Runnable() {
+				    @Override
+				    public void run() {
+                        s.messagesView.setAdapter(s.messagesAdapter);
+                        showProgress(false);
+				    }
+                });
+			}
         });
 
-        mMsgSend.setOnClickListener((View v) -> {
-            try {
-                s.sendMessage = mMsgComposer.getText().toString();
-                s.sendReference = 0;
-                s.sendPing = false;
-                s.api.aSendMessage(null);
-                mMsgComposer.setText("");
-            } catch (Exception e) {
-                s.error("Error sending mesage: " + e.getMessage());
-                e.printStackTrace();
-            }
+        mMsgSend.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+                try {
+                    s.sendMessage = mMsgComposer.getText().toString();
+                    s.sendReference = 0;
+                    s.sendPing = false;
+                    s.api.aSendMessage(null);
+                    mMsgComposer.setText("");
+                } catch (Exception e) {
+                    s.error("Error sending mesage: " + e.getMessage());
+                    e.printStackTrace();
+                }
+			}
         });
     }
 

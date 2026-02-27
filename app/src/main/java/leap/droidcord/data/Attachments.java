@@ -94,20 +94,23 @@ public class Attachments {
         if (!imageViews.containsKey(url))
             return;
 
-        s.runOnUiThread(() -> {
-            final Vector<WeakReference<ImageView>> references = imageViews.get(url);
-            imageViews.remove(url);
-            for (int i = 0; i < references.size(); i++) {
-                WeakReference<ImageView> ref = references.get(i);
-                if (ref == null)
-                    continue;
+        s.runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+                final Vector<WeakReference<ImageView>> references = imageViews.get(url);
+                imageViews.remove(url);
+                for (int i = 0; i < references.size(); i++) {
+                    WeakReference<ImageView> ref = references.get(i);
+                    if (ref == null)
+                        continue;
 
-                ImageView imageView = ref.get();
-                if (imageView != null && imageView.getTag() != null && imageView.getTag().equals(url)) {
-                    imageView.setImageBitmap(image);
-                    imageView.invalidate();
+                    ImageView imageView = ref.get();
+                    if (imageView != null && imageView.getTag() != null && imageView.getTag().equals(url)) {
+                        imageView.setImageBitmap(image);
+                        imageView.invalidate();
+                    }
                 }
-            }
+			}
         });
     }
 }

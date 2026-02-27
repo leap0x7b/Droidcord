@@ -54,8 +54,11 @@ public class LoginActivity extends Activity {
         mTokenView = (EditText) findViewById(R.id.token);
         mSendTokenAsView = (Spinner) findViewById(R.id.send_token_as);
 
-        mUseGatewayView.setOnCheckedChangeListener((CompoundButton view, boolean isChecked) -> {
-            mGatewayUrlView.setEnabled(isChecked);
+        mUseGatewayView.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			@Override
+			public void onCheckedChanged(CompoundButton view, boolean isChecked) {
+                mGatewayUrlView.setEnabled(isChecked);
+			}
         });
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
@@ -67,8 +70,11 @@ public class LoginActivity extends Activity {
         mSendTokenAsView.setAdapter(adapter);
 
         Button mLoginButton = (Button) findViewById(R.id.login_button);
-        mLoginButton.setOnClickListener((View v) -> {
-            attemptLogin();
+        mLoginButton.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+                attemptLogin();
+			}
         });
     }
 
@@ -174,41 +180,47 @@ public class LoginActivity extends Activity {
 
         @Override
         public Void call() {
-            s.executor.execute(() -> {
-                try {
-                    s.useGateway = mUseGateway;
-                    s.tokenType = mSendTokenAs;
-                    s.login(mApiUrl, mGatewayUrl, mCdnUrl, mToken);
-                    success = true;
-                } catch (Exception e) {
-                    success = false;
-                    error = e.toString();
-                }
-
-                SharedPreferences sp = PreferenceManager
-                        .getDefaultSharedPreferences(mContext);
-                SharedPreferences.Editor editor = sp.edit();
-                editor.putString("api", mApiUrl);
-                editor.putString("cdn", mCdnUrl);
-                editor.putBoolean("useGateway", mUseGateway);
-                editor.putString("gateway", mGatewayUrl);
-                editor.putString("token", mToken);
-                editor.putInt("tokenType", mSendTokenAs);
-                editor.putInt("messageLoadCount", 25);
-                editor.commit();
-
-                s.runOnUiThread(() -> {
-                    mAuthTask = null;
-                    showProgress(false);
-
-                    if (success) {
-                        Intent intent = new Intent(mContext, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        s.error(error);
+            s.executor.execute(new Runnable() {
+				@Override
+				public void run() {
+                    try {
+                        s.useGateway = mUseGateway;
+                        s.tokenType = mSendTokenAs;
+                        s.login(mApiUrl, mGatewayUrl, mCdnUrl, mToken);
+                        success = true;
+                    } catch (Exception e) {
+                        success = false;
+                        error = e.toString();
                     }
-                });
+
+                    SharedPreferences sp = PreferenceManager
+                            .getDefaultSharedPreferences(mContext);
+                    SharedPreferences.Editor editor = sp.edit();
+                    editor.putString("api", mApiUrl);
+                    editor.putString("cdn", mCdnUrl);
+                    editor.putBoolean("useGateway", mUseGateway);
+                    editor.putString("gateway", mGatewayUrl);
+                    editor.putString("token", mToken);
+                    editor.putInt("tokenType", mSendTokenAs);
+                    editor.putInt("messageLoadCount", 25);
+                    editor.commit();
+
+                    s.runOnUiThread(new Runnable() {
+						@Override
+						public void run() {
+                            mAuthTask = null;
+                            showProgress(false);
+
+                            if (success) {
+                                Intent intent = new Intent(mContext, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            } else {
+                                s.error(error);
+                            }
+						}
+                    });
+				}
             });
             return null;
         }

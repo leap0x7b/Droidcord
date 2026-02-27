@@ -332,86 +332,116 @@ public class API {
     }
 
     public void aFetchGuilds(final Runnable callback) {
-        s.executor.execute(() -> {
-            fetchGuilds();
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                fetchGuilds();
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aFetchDirectMessages(final Runnable callback) {
-        s.executor.execute(() -> {
-            fetchDirectMessages();
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                fetchDirectMessages();
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aFetchChannels(final Runnable callback) {
-        s.executor.execute(() -> {
-            fetchChannels();
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                fetchChannels();
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aFetchMessages(final long before, final long after,
                                final Runnable callback) {
-        s.executor.execute(() -> {
-            fetchMessages(before, after);
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                fetchMessages(before, after);
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aFetchAttachment(final Attachment attachment, final Runnable callback) {
-        s.executor.execute(() -> {
-            fetchAttachment(attachment);
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                fetchAttachment(attachment);
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aFetchIcon(final HasIcon target, final int size,
                            final Runnable callback) {
-        s.executor.execute(() -> {
-            fetchIcon(target, size);
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                fetchIcon(target, size);
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aSendMessage(final Runnable callback) {
-        s.executor.execute(() -> {
-            sendMessage();
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                sendMessage();
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aSendAttachment(final String path, final String name,
                                 final Runnable callback) {
-        s.executor.execute(() -> {
-            sendAttachment(path, name);
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                sendAttachment(path, name);
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aEditMessage(final Message message, final String content,
                              final Runnable callback) {
-        s.executor.execute(() -> {
-            editMessage(message, content);
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                editMessage(message, content);
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 
     public void aDeleteMessage(final Message message, final Runnable callback) {
-        s.executor.execute(() -> {
-            deleteMessage(message);
-            if (callback != null)
-                callback.run();
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                deleteMessage(message);
+                if (callback != null)
+                    callback.run();
+			}
         });
     }
 }

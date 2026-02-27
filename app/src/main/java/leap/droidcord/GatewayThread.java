@@ -216,11 +216,14 @@ public class GatewayThread extends Thread {
             }
         }
 
-        s.runOnUiThread(() -> {
-            s.messages.cluster();
-            s.messagesAdapter.notifyDataSetChanged();
-            s.messagesView.setSelection(s.messagesAdapter.getCount() - 1);
-            s.messagesView.invalidate();
+        s.runOnUiThread(new Runnable() {
+		    @Override
+			public void run() {
+                s.messages.cluster();
+                s.messagesAdapter.notifyDataSetChanged();
+                s.messagesView.setSelection(s.messagesAdapter.getCount() - 1);
+                s.messagesView.invalidate();
+			}
         });
     }
 

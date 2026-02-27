@@ -50,23 +50,29 @@ public class GuildListAdapter extends BaseExpandableListAdapter {
             return guild.channels;
 
         showProgress(true);
-        s.executor.execute(() -> {
-            try {
-                if (guild.roles == null)
-                    guild.roles = Role.parseRoles(JSON.getArray(s.http.get("/guilds/" + guild.id + "/roles?droidcord=1")));
+        s.executor.execute(new Runnable() {
+			@Override
+			public void run() {
+                try {
+                    if (guild.roles == null)
+                        guild.roles = Role.parseRoles(JSON.getArray(s.http.get("/guilds/" + guild.id + "/roles?droidcord=1")));
 
-                if (guild.me == null)
-                    guild.me = new GuildMember(s, guild, JSON.getObject(s.http.get("/guilds/" + guild.id + "/members/" + s.myUserId)));
+                    if (guild.me == null)
+                        guild.me = new GuildMember(s, guild, JSON.getObject(s.http.get("/guilds/" + guild.id + "/members/" + s.myUserId)));
 
-                guild.channels = Channel.parseChannels(s, guild, JSON.getArray(s.http.get("/guilds/" + guild.id + "/channels")));
+                    guild.channels = Channel.parseChannels(s, guild, JSON.getArray(s.http.get("/guilds/" + guild.id + "/channels")));
 
-                s.runOnUiThread(() -> {
-                    notifyDataSetChanged();
-                    showProgress(false);
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                    s.runOnUiThread(new Runnable() {
+						@Override
+			            public void run() {
+                            notifyDataSetChanged();
+                            showProgress(false);
+						}
+                    });
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+			}
         });
 
         return new Vector<Channel>();
