@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -13,13 +14,16 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import leap.droidcord.data.API;
+import leap.droidcord.data.Attachments;
 import leap.droidcord.data.GuildInformation;
 import leap.droidcord.data.Icons;
-import leap.droidcord.data.Attachments;
 import leap.droidcord.data.Messages;
+import leap.droidcord.data.Presences;
 import leap.droidcord.model.Channel;
 import leap.droidcord.model.DirectMessage;
 import leap.droidcord.model.Guild;
+import leap.droidcord.ui.GuildListAdapter;
+import leap.droidcord.ui.DMListAdapter;
 import leap.droidcord.ui.MessageListAdapter;
 
 import cc.nnproject.json.JSON;
@@ -60,11 +64,15 @@ public class State {
     public Icons icons;
     public Attachments attachments;
     public GuildInformation guildInformation;
+    public Presences presences;
     public UnreadManager unreads;
 
     public Vector<Guild> guilds;
     public Guild selectedGuild;
     public Vector<Guild> subscribedGuilds;
+
+    public GuildListAdapter guildsAdapter;
+    public ExpandableListView guildsView;
 
     public Vector<Channel> channels;
     public Channel selectedChannel;
@@ -86,6 +94,9 @@ public class State {
     public Vector<DirectMessage> directMessages;
     public DirectMessage selectedDm;
 
+    public DMListAdapter dmsAdapter;
+    public ListView dmsView;
+
     public ExecutorService executor;
     public Handler handler;
 
@@ -97,6 +108,7 @@ public class State {
         this.icons = new Icons(this);
         this.attachments = new Attachments(this);
         this.guildInformation = new GuildInformation(this);
+        this.presences = new Presences(this);
         this.unreads = new UnreadManager(this, c);
         this.guilds = new Vector<Guild>();
         this.channels = new Vector<Channel>();

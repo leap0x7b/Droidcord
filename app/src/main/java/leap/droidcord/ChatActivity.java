@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -13,13 +14,12 @@ import android.widget.ListView;
 import leap.droidcord.ui.MessageListAdapter;
 
 public class ChatActivity extends Activity {
-    int page;
-    long before;
-    long after;
     private State s;
     private Context context;
     private EditText mMsgComposer;
     private Button mMsgSend;
+    private boolean mLoadingOlder;
+    private boolean mNoMoreHistory;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +55,20 @@ public class ChatActivity extends Activity {
             });
         });
 
+        s.messagesView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView v, int i) {
+            }
+
+            @Override
+            public void onScroll(AbsListView v, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (firstVisibleItem != 0 || totalItemCount == 0
+                        || mLoadingOlder || mNoMoreHistory)
+                    return;
+                loadOlderMessages();
+            }
+        });
+
         mMsgSend.setOnClickListener((View v) -> {
             try {
                 s.sendMessage = mMsgComposer.getText().toString();
@@ -66,6 +80,32 @@ public class ChatActivity extends Activity {
                 s.error("Error sending mesage: " + e.getMessage());
                 e.printStackTrace();
             }
+        });
+    }
+
+    private void loadOlderMessages() {
+        mLoadingOlder = true;
+        showProgress(true);
+
+        final int prevCount = s.messages.size();
+        final long before = s.messages.get(0).id;
+
+        s.api.aFetchMessagesBefore(before, () -> {
+            final int added = s.messages.size() - prevCount;
+            s.runOnUiThread(() -> {
+                if (added > 0) {
+                    final ListView view = s.messagesView;
+                    final int first = view.getFirstVisiblePosition();
+                    final View topChild = view.getChildAt(0);
+                    final int top = topChild != null ? topChild.getTop() : 0;
+                    s.messagesAdapter.notifyDataSetChanged();
+                    view.setSelectionFromTop(first + added, top);
+                }
+                if (added < Math.max(1, s.messageLoadCount))
+                    mNoMoreHistory = true;
+                showProgress(false);
+                mLoadingOlder = false;
+            });
         });
     }
 

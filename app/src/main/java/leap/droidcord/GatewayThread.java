@@ -10,6 +10,7 @@ import leap.droidcord.model.Channel;
 import leap.droidcord.model.DirectMessage;
 import leap.droidcord.model.Guild;
 import leap.droidcord.model.Message;
+import leap.droidcord.model.Presence;
 import leap.droidcord.model.Role;
 
 import android.util.Log;
@@ -122,9 +123,9 @@ public class GatewayThread extends Thread {
                 } else if ("GATEWAY_DISCONNECT".equals(op)) {
                     handleGatewayDisconnect(message);
                     return;
-                    // TODO: change these from J2ME_ to DROIDCORD_ after a PR in the
-                    //       gateway proxy for Droidcord compatibility parity with
-                    //       the API proxy get merged.
+                // TODO: change these from J2ME_ to DROIDCORD_ after a PR in the
+                //       gateway proxy for Droidcord compatibility parity with
+                //       the API proxy get merged.
                 } else if ("J2ME_MESSAGE_CREATE".equals(op)) {
                     handleGatewayMessageCreate(message);
                 } else if ("MESSAGE_DELETE".equals(op)) {
@@ -135,6 +136,8 @@ public class GatewayThread extends Thread {
                     handleGatewayTypingStart(message);
                 } else if ("GUILD_MEMBERS_CHUNK".equals(op)) {
                     handleGatewayGuildMembersChunk(message);
+                } else if ("PRESENCE_UPDATE".equals(op)) {
+                    handleGatewayPresenceUpdate(message);
                 } else if ("J2ME_READY".equals(op)) {
                     handleGatewayReady(message);
                 } else if (message.getInt("op", 0) == 10) {
@@ -156,6 +159,7 @@ public class GatewayThread extends Thread {
         events.add("J2ME_MESSAGE_UPDATE");
         events.add("TYPING_START");
         events.add("GUILD_MEMBERS_CHUNK");
+        events.add("PRESENCE_UPDATE");
         events.add("J2ME_READY");
 
         JSONObject data = new JSONObject();
@@ -348,7 +352,6 @@ public class GatewayThread extends Thread {
             int resultColor = 0;
 
             JSONObject member = members.getObject(i);
-            Log.w("GatewayThread", "Member: " + member.toString());
             String id = member.getObject("user").getString("id");
 
             String nickname = member.getString("nick", null);
@@ -372,7 +375,22 @@ public class GatewayThread extends Thread {
             s.guildInformation.set(id + guildId, resultColor, nickname);
         }
 
+        JSONArray presences = data.getArray("presences");
+
+        for (int i = 0; i < presences.size(); i++) {
+            JSONObject presence = presences.getObject(i);
+            Log.w("GatewayThread", "Presence: " + presence.toString());
+            JSONObject user = presence.getObject("user");
+            s.presences.set(user.getString("id"), new Presence(presence));
+        }
+
         s.guildInformation.activeRequest = false;
+    }
+
+    private void handleGatewayPresenceUpdate(JSONObject message) {
+        JSONObject data = message.getObject("d");
+        JSONObject user = data.getObject("user");
+        s.presences.set(user.getString("id"), new Presence(data));
     }
 
     private void handleGatewayReady(JSONObject message) {

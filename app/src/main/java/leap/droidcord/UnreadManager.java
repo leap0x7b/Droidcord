@@ -29,7 +29,7 @@ public class UnreadManager {
         // Load last read message IDs from RMS (convert JSON to hashtable)
         try {
             SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(c);
-            JSONArray json = JSON.getArray(new String(sp.getString("unread", "")));
+            JSONArray json = JSON.getArray(new String(sp.getString("unread", "[]")));
 
             for (int i = 0; i < json.size(); i++) {
                 JSONArray elem = json.getArray(i);
@@ -39,6 +39,7 @@ public class UnreadManager {
                 channels.put(key, value);
             }
         } catch (Exception e) {
+            e.printStackTrace();
             s.error(e.toString());
         }
     }
@@ -65,6 +66,7 @@ public class UnreadManager {
             editor.putString("unread", json.build());
             editor.commit();
         } catch (Exception e) {
+            e.printStackTrace();
             s.error(e.toString());
         }
     }

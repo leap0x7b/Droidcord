@@ -62,7 +62,7 @@ public class MessageListAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return messages.get(position).id;
     }
 
     @Override

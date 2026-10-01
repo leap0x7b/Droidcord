@@ -51,6 +51,7 @@ public class GuildInformation {
         }
 
         reqData.put("user_ids", requestIds);
+        reqData.put("presences", true);
 
         JSONObject msg = new JSONObject();
         msg.put("op", 8);

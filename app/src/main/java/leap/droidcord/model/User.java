@@ -7,6 +7,7 @@ import leap.droidcord.Util;
 
 public class User extends Snowflake implements HasIcon {
     public String name;
+    public String username;
     public String iconHash;
 
     // For placeholder icon
@@ -16,9 +17,10 @@ public class User extends Snowflake implements HasIcon {
     public User(State s, JSONObject data) {
         super(Long.parseLong(data.getString("id")));
 
-        name = data.getString("global_name", null);
+        username = data.getString("username", "(unknown)");
+        name = data.getString("global_name", username);
         if (name == null)
-            name = data.getString("username", "(no name)");
+            name = "(unknown)";
 
         iconHash = data.getString("avatar", null);
 

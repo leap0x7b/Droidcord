@@ -71,8 +71,7 @@ public class DMListAdapter extends BaseAdapter {
 
         s.icons.load(viewHolder.icon, defaultAvatar, dm, iconSize);
         viewHolder.name.setText(dm.name);
-        // TODO: implement statuses, make them invisible for now
-        viewHolder.status.setVisibility(View.GONE);
+        s.presences.load(viewHolder.status, dm);
 
         return convertView;
     }

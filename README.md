@@ -1,10 +1,7 @@
-# Droidcord
+# Droidcord [![Android CI](https://github.com/leap0x7b/Droidcord/actions/workflows/android.yml/badge.svg)](https://github.com/leap0x7b/Droidcord/actions/workflows/android.yml)
 A Discord client for old Android <4.x devices. Uses proxy servers for the [HTTP](https://github.com/gtrxAC/discord-j2me/blob/main/proxy) and [gateway](https://github.com/gtrxAC/discord-j2me-server) connection. Currently work-in-progress.
 
-## How to build
-1. Install Android Studio. I use Android Studio 1.0 though newer versions should work fine.
-2. Clone the repository
-3. Run the project.
+[Download](https://nightly.link/leap0x7b/Droidcord/workflows/android/master/app-release.apk)
 
 ## Status
 ### Working

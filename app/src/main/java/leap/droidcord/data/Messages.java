@@ -22,6 +22,11 @@ public class Messages {
             messages.add(message);
     }
 
+    public void addFirst(Message message) {
+        if (message != null)
+            messages.add(0, message);
+    }
+
     public void cluster() {
         if (messages.size() > 1) {
             Message previous = null;

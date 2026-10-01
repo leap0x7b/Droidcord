@@ -7,16 +7,18 @@ import cc.nnproject.json.JSONObject;
 import leap.droidcord.State;
 
 public class GuildMember extends User {
-    String username;
-    String name;
-    String nickname;
-    Vector<Role> roles;
-    long permissions;
+    public String nickname;
+    public boolean isBot;
+    public Vector<Role> roles;
+    public long permissions;
 
     public GuildMember(State s, Guild g, JSONObject data) {
         super(s, data.getObject("user"));
-        username = data.getString("username", null);
-        name = data.getString("global_name", username);
+
+        JSONObject user = data.getObject("user");
+        name = user.getString("display_name", user.getString("global_name", username));
+        if (name == null) name = "(unknown)";
+        isBot = user.getBoolean("bot", false);
 
         if (data.has("nick"))
             nickname = data.getString("nick", null);

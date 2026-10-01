@@ -33,30 +33,24 @@ public class MainActivity extends TabActivity {
     public static State s;
     private Context mContext;
 
-    ExpandableListView mGuildsView;
-    ExpandableListAdapter mGuildsAdapter;
-
-    ListView mDmsView;
-    ListAdapter mDmsAdapter;
-
     private class LoadInformationRunnable implements Runnable {
         private final AtomicInteger mLoadCount = new AtomicInteger(0);
 
         @Override
         public void run() {
             s.api.aFetchGuilds(() -> {
-                mGuildsAdapter = new GuildListAdapter(MainActivity.this, mContext, s, s.guilds);
+                s.guildsAdapter = new GuildListAdapter(MainActivity.this, mContext, s, s.guilds);
                 s.runOnUiThread(() -> {
-                    mGuildsView.setAdapter(mGuildsAdapter);
+                    s.guildsView.setAdapter(s.guildsAdapter);
                     if (mLoadCount.incrementAndGet() == 2)
                         showProgress(false);
                 });
             });
 
             s.api.aFetchDirectMessages(() -> {
-                mDmsAdapter = new DMListAdapter(mContext, s, s.directMessages);
+                s.dmsAdapter = new DMListAdapter(mContext, s, s.directMessages);
                 s.runOnUiThread(() -> {
-                    mDmsView.setAdapter(mDmsAdapter);
+                    s.dmsView.setAdapter(s.dmsAdapter);
                     if (mLoadCount.incrementAndGet() == 2)
                         showProgress(false);
                 });
@@ -78,8 +72,8 @@ public class MainActivity extends TabActivity {
         tabHost.addTab(tabHost.newTabSpec("dm").setIndicator("Direct Messages").setContent(R.id.dm_tab));
         tabHost.addTab(tabHost.newTabSpec("settings").setIndicator("Settings").setContent(R.id.settings_tab));
 
-        mGuildsView = (ExpandableListView) findViewById(R.id.servers);
-        mDmsView = (ListView) findViewById(R.id.direct_messages);
+        s.guildsView = (ExpandableListView) findViewById(R.id.servers);
+        s.dmsView = (ListView) findViewById(R.id.direct_messages);
 
         TabWidget tabWidget = tabHost.getTabWidget();
         for (int i = 0; i < tabWidget.getChildCount(); i++) {
@@ -116,23 +110,23 @@ public class MainActivity extends TabActivity {
             e.printStackTrace();
         }
 
-        mGuildsView.setOnChildClickListener((ExpandableListView parent, View v,
-                                             int groupPosition, int childPosition,
-                                             long id) -> {
+        s.guildsView.setOnChildClickListener((ExpandableListView parent, View v,
+                                              int groupPosition, int childPosition,
+                                              long id) -> {
             Intent intent = new Intent(mContext, ChatActivity.class);
             s.isDM = false;
             s.selectedDm = null;
-            s.selectedGuild = (Guild) mGuildsAdapter.getGroup(groupPosition);
-            s.selectedChannel = (Channel) mGuildsAdapter.getChild(groupPosition, childPosition);
+            s.selectedGuild = (Guild) s.guildsAdapter.getGroup(groupPosition);
+            s.selectedChannel = (Channel) s.guildsAdapter.getChild(groupPosition, childPosition);
             startActivity(intent);
             return true;
         });
 
-        mDmsView.setOnItemClickListener((AdapterView<?> parent, View v, int position,
-                                         long id) -> {
+        s.dmsView.setOnItemClickListener((AdapterView<?> parent, View v, int position,
+                                          long id) -> {
             Intent intent = new Intent(mContext, ChatActivity.class);
             s.isDM = true;
-            s.selectedDm = (DirectMessage) mDmsAdapter.getItem(position);
+            s.selectedDm = (DirectMessage) s.dmsAdapter.getItem(position);
             s.selectedGuild = null;
             s.selectedChannel = null;
             startActivity(intent);

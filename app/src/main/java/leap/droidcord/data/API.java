@@ -15,6 +15,7 @@ import leap.droidcord.model.HasIcon;
 import leap.droidcord.model.Message;
 import leap.droidcord.model.Role;
 import leap.droidcord.model.Snowflake;
+import leap.droidcord.model.User;
 
 import android.graphics.Bitmap;
 import android.util.Log;
@@ -62,6 +63,7 @@ public class API {
                 s.guilds.add(new Guild(s, data.getObject(i)));
         } catch (Exception e) {
             Log.e(TAG, "Error fetching guilds", e);
+            s.error("Error fetching servers: " + e.getMessage());
         }
     }
 
@@ -80,6 +82,7 @@ public class API {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error fetching direct messages", e);
+            s.error("Error fetching direct messages: " + e.getMessage());
         }
     }
 
@@ -115,6 +118,7 @@ public class API {
             s.channels = s.selectedGuild.channels;
         } catch (Exception e) {
             Log.e(TAG, "Error fetching channels", e);
+            s.error("Error fetching channels: " + e.getMessage());
         }
     }
 
@@ -146,6 +150,31 @@ public class API {
             }
         } catch (Exception e) {
             Log.e(TAG, "Error fetching messages", e);
+            s.error("Error fetching messages: " + e.getMessage());
+        }
+    }
+
+    public void fetchMessagesBefore(long before) {
+        try {
+            Snowflake channel = s.isDM ? s.selectedDm : s.selectedChannel;
+
+            StringBuffer url = new StringBuffer("/channels/" + channel.id
+                    + "/messages?droidcord=1&limit=" + s.messageLoadCount);
+            if (before != 0)
+                url.append("&before=" + before);
+
+            JSONArray messages = JSON.getArray(s.http.get(url.toString()));
+
+            for (int i = 0; i < messages.size(); i++)
+                s.messages.addFirst(new Message(s, messages.getObject(i)));
+
+            s.messages.cluster();
+
+            if (!s.isDM) {
+                s.guildInformation.fetch();
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Error fetching older messages", e);
             s.error("Error fetching messages: " + e.getMessage());
         }
     }
@@ -359,6 +388,15 @@ public class API {
                                final Runnable callback) {
         s.executor.execute(() -> {
             fetchMessages(before, after);
+            if (callback != null)
+                callback.run();
+        });
+    }
+
+    public void aFetchMessagesBefore(final long before,
+                                     final Runnable callback) {
+        s.executor.execute(() -> {
+            fetchMessagesBefore(before);
             if (callback != null)
                 callback.run();
         });

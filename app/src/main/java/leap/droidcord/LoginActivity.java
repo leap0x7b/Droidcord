@@ -181,6 +181,7 @@ public class LoginActivity extends Activity {
                     s.login(mApiUrl, mGatewayUrl, mCdnUrl, mToken);
                     success = true;
                 } catch (Exception e) {
+                    e.printStackTrace();
                     success = false;
                     error = e.toString();
                 }

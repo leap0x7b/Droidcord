@@ -1,23 +1,54 @@
 apply plugin: 'com.android.application'
+apply plugin: 'me.tatarka.retrolambda'
+
+def keystore = new Properties()
+def keystoreFile = rootProject.file('keystore.properties')
+if (keystoreFile.exists()) {
+    keystore.load(keystoreFile.newDataInputStream())
+}
 
 android {
-    compileSdkVersion 14
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
 
-    namespace "leap.droidcord"
     defaultConfig {
         applicationId "leap.droidcord"
-        //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 1
+        minSdkVersion 1
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
     }
+
+    signingConfigs {
+        release {
+            storeFile file(keystore['store.file'])
+            storePassword keystore['store.password']
+            keyAlias keystore['key.alias']
+            keyPassword keystore['key.password']
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
         }
     }
+
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_1_6
+        targetCompatibility JavaVersion.VERSION_1_6
+    }
+}
+
+retrolambda {
+    javaVersion JavaVersion.VERSION_1_6
+}
+
+// workaround for compileSdkVersion >= 21
+tasks.whenTaskAdded { task ->
+    if (task.name == "mockableAndroidJar") {
+        task.enabled = false
     }
 }
