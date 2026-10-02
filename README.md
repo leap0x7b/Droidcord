@@ -1,7 +1,7 @@
 # Droidcord [![Android CI](https://github.com/leap0x7b/Droidcord/actions/workflows/android.yml/badge.svg)](https://github.com/leap0x7b/Droidcord/actions/workflows/android.yml)
 A Discord client for old Android <4.x devices. Uses proxy servers for the [HTTP](https://github.com/gtrxAC/discord-j2me/blob/main/proxy) and [gateway](https://github.com/gtrxAC/discord-j2me-server) connection. Currently work-in-progress.
 
-[Download nightly builds](https://nightly.link/leap0x7b/Droidcord/workflows/android/main/app-release.apk)
+[Download nightly build](https://nightly.link/leap0x7b/Droidcord/workflows/android/main/app-release.apk)
 
 ## Status
 ### Working
