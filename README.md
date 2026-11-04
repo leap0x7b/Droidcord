@@ -1,3 +1,6 @@
+# DISCONTINUED
+Droidcord has been discontinued in favor of [Discofi](https://github.com/gtrxAC/Discofi-Android), a currently work-in-progress successor to Droidcord and Discord J2ME for both Android and J2ME which has less features than Discord J2ME but way more than Droidcord. If you want to use Discord on a legacy Android device, please instead use either Discofi if you want a native Android experience or Discord J2ME on J2ME Loader if you want a more complete feature set.
+
 # Droidcord [![Android CI](https://github.com/leap0x7b/Droidcord/actions/workflows/android.yml/badge.svg)](https://github.com/leap0x7b/Droidcord/actions/workflows/android.yml)
 A Discord client for old Android <4.x devices. Uses proxy servers for the [HTTP](https://github.com/gtrxAC/discord-j2me/blob/main/proxy) and [gateway](https://github.com/gtrxAC/discord-j2me-server) connection. Currently work-in-progress.
 
